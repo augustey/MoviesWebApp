@@ -17,7 +17,7 @@ public class PostgreSQLDataSource implements DataSource{
     private final Config config;
     private final Logger logger;
     private Session session;
-    Connection conn;
+    private Connection conn;
 
     /**
      * Constructor for PostgreSQLDataSource.
