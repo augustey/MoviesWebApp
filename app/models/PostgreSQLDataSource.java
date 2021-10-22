@@ -10,21 +10,21 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 
 /**
- * Class for creating connections to a PostgresSQL server
+ * Class for creating connections to a PostgreSQL server
  * @author Yaqim Auguste (yaa6681@rit.edu)
  */
-public class PostgresSQLDataSource implements DataSource{
+public class PostgreSQLDataSource implements DataSource{
     private final Config config;
     private final Logger logger;
     private Session session;
     Connection conn;
 
     /**
-     * Constructor for PostgresSQLDataSource.
-     * @param config Configuration class containing configurations for SSH tunnel and PostgresSQL database.
+     * Constructor for PostgreSQLDataSource.
+     * @param config Configuration class containing configurations for SSH tunnel and PostgreSQL database.
      */
     @Inject
-    PostgresSQLDataSource(Config config) {
+    PostgreSQLDataSource(Config config) {
         this.config = config.getConfig("db_config");
         this.logger = LoggerFactory.getLogger(this.getClass());
     }

@@ -3,10 +3,10 @@ package models;
 import com.google.inject.ImplementedBy;
 
 /**
- * Interface for a data source used to access postgresSQL databases.
+ * Interface for a data source used to access postgreSQL databases.
  * @author Yaqim Auguste (yaa6681@rit.edu)
  */
-@ImplementedBy(PostgresSQLDataSource.class)
+@ImplementedBy(PostgreSQLDataSource.class)
 public interface DataSource {
     /**
      * Execute some callback with a connection.

@@ -10,7 +10,7 @@ import java.sql.Connection;
 public interface DataSourceCallable<T> {
     /**
      * Execute some code with a database connection.
-     * @param conn The connection object representing a connection to a PostgresSQL database.
+     * @param conn The connection object representing a connection to a PostgreSQL database.
      * @return Any value that the calling class expects.
      * @throws Exception An exception that is raised when executing the callback.
      */
