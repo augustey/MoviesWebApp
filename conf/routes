@@ -5,9 +5,9 @@
 # An example controller showing a sample home page
 GET     /                           controllers.HomeController.index(request: Request)
 
-GET     /signin                     controllers.SignInController.signIn(request: Request)
+GET     /signin                     controllers.SignInController.signIn(request: Request, error: Boolean?=false)
 
-GET     /logout                    controllers.LogoutController.logout()
+GET     /logout                     controllers.LogoutController.logout()
 
 POST    /signin                     controllers.SignInController.verify(request: Request)
 
