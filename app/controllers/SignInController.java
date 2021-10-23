@@ -39,8 +39,8 @@ public class SignInController {
      * Display the sign in page on GET /signin
      * @return a response containing the sign in page content
      */
-    public Result signIn() {
-        return ok(views.html.signin.render());
+    public Result signIn(Http.Request request) {
+        return ok(views.html.signin.render(request.session()));
     }
 
     /**

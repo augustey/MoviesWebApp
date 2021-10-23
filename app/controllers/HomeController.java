@@ -17,12 +17,13 @@ public class HomeController extends Controller {
      * @return The response body
      */
     public Result index(Http.Request request) {
-        return request.session().get(SignInController.USER_KEY).map(userJson -> {
+        Http.Session session = request.session();
+        return session.get(SignInController.USER_KEY).map(userJson -> {
             JsonNode userNode = Json.parse(userJson);
             User user = Json.fromJson(userNode, User.class);
 
-            return ok(views.html.index.render(user));
-        }).orElseGet(() -> ok(views.html.index.render(null)));
+            return ok(views.html.index.render(user, session));
+        }).orElseGet(() -> ok(views.html.index.render(null, session)));
     }
 
 }
