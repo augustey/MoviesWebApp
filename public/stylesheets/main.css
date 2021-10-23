@@ -51,6 +51,12 @@ body {
     padding: 20px 0px;
 }
 
+.signin {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .signin form {
     display: flex;
     flex-direction: column;
@@ -70,4 +76,8 @@ body {
     border-radius: 10px;
     border: 1px solid black;
     background-color: #79B4B7;
+}
+
+.error {
+    color: red;
 }
