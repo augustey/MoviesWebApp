@@ -4,7 +4,7 @@
 * two arguments, a `String` for the title of the page and an `Html`
 * object to insert into the body of the page.
 *@
-@(user: User)
+@(user: User)(implicit session: play.mvc.Http.Session)
 
 <!DOCTYPE html>
 <html lang="en">
@@ -20,7 +20,7 @@
         @header()
     <div class="content">
         @if(user != null) {
-            <p>Welcome @user.getFirstName</p>
+            <p>Welcome @user.getFirstName()</p>
         } else {
             <p>You are not signed in.</p>
         }

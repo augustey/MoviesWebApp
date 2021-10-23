@@ -4,7 +4,7 @@
 * two arguments, a `String` for the title of the page and an `Html`
 * object to insert into the body of the page.
 *@
-@()
+@()(implicit session: play.mvc.Http.Session)
 
 <!DOCTYPE html>
 <html lang="en">
@@ -27,6 +27,7 @@
                     <input type="password" name="password"/>
                     <input type="submit"/>
                 </form>
+                <span class="error">This is an error</span>
             </div>
         </div>
     </body>
