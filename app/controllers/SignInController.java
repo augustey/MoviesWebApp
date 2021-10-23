@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.libs.Json;
 import play.mvc.*;
+import util.Message;
 
 import javax.inject.Inject;
 
@@ -24,6 +25,7 @@ public class SignInController {
     private final AccountManager accountManager;
     private final Logger logger;
     public static final String USER_KEY = "user";
+    private final Message SIGNIN_FAIL = Message.error("Username or password was incorrect");
 
     /**
      * Constructor for the Sign in controller
@@ -39,8 +41,9 @@ public class SignInController {
      * Display the sign in page on GET /signin
      * @return a response containing the sign in page content
      */
-    public Result signIn(Http.Request request) {
-        return ok(views.html.signin.render(request.session()));
+    public Result signIn(Http.Request request, boolean error) {
+        Message message = error ? SIGNIN_FAIL : Message.info("");
+        return ok(views.html.signin.render(message, request.session()));
     }
 
     /**
@@ -61,7 +64,7 @@ public class SignInController {
                 return redirect("/").addingToSession(request, USER_KEY, userNode.toString());
             }
             else {
-                return redirect("/signin");
+                return redirect("/signin?error=1");
             }
         });
     }
