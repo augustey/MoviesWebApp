@@ -2,8 +2,6 @@ package controllers;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import models.AccountManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import play.libs.Json;
 import play.mvc.*;
 import util.Message;
@@ -23,7 +21,6 @@ import static play.mvc.Results.redirect;
  */
 public class SignInController {
     private final AccountManager accountManager;
-    private final Logger logger;
     public static final String USER_KEY = "user";
     private final Message SIGNIN_FAIL = Message.error("Username or password was incorrect");
 
@@ -34,7 +31,6 @@ public class SignInController {
     @Inject
     SignInController(AccountManager accountManager) {
         this.accountManager = accountManager;
-        this.logger = LoggerFactory.getLogger(this.getClass());
     }
 
     /**
