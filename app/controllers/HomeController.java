@@ -11,7 +11,6 @@ import play.mvc.*;
  * @author Yaqim Auguste (yaa6681@rit.edu)
  */
 public class HomeController extends Controller {
-
     /**
      * Render the index page
      * @return The response body
