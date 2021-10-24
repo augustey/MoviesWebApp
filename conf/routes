@@ -7,7 +7,7 @@ GET     /                           controllers.HomeController.index(request: Re
 
 GET     /signin                     controllers.SignInController.signIn(request: Request, error: Boolean?=false)
 
-GET     /logout                     controllers.LogoutController.logout()
+GET     /logout                     controllers.LogoutController.logout(request: Request)
 
 GET     /register                   controllers.RegisterController.register(request: Request)
 
