@@ -2,6 +2,8 @@ package models;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import util.Message;
+
 import javax.inject.Inject;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -16,6 +18,12 @@ import java.util.concurrent.CompletionStage;
 public class AccountManager {
     private final DataSource dataSource;
     private final Logger logger;
+    private final Message USER_EXISTS = Message.error("User already exists");
+    private final Message EMAIL_EXISTS = Message.error("Email already in use");
+
+    private final Message USER_SUCCESS = Message.info("User created");
+
+
 
     /**
      * Constructor for AccountManager
@@ -25,6 +33,60 @@ public class AccountManager {
     AccountManager(DataSource dataSource) {
         this.dataSource = dataSource;
         this.logger = LoggerFactory.getLogger(this.getClass());
+    }
+
+    /**
+     * Attempt to create a new user in the database
+     * @param username User's usernmae
+     * @param password User's password
+     * @param email User's email
+     * @param firstName User's first name
+     * @param lastName User's last name
+     * @return A message object indicating whether the operation was successful or not
+     */
+    public CompletionStage<Message> createUser(String username, String password, String email, String firstName, String lastName) {
+        return CompletableFuture.supplyAsync(() ->
+                dataSource.withConnection(conn -> {
+                    Statement statement = conn.createStatement();
+                    String sql = "SELECT *  FROM Users WHERE Username='%s';";
+                    sql = String.format(sql, username);
+                    ResultSet results = statement.executeQuery(sql);
+
+                    logger.info("Attempting to create user "+username+"...");
+
+                    if(results.next()) {
+                        logger.info("Could not create user "+username);
+                        results.close();
+                        statement.close();
+                        return USER_EXISTS;
+                    }
+
+                    results.close();
+
+                    sql = "SELECT *  FROM Users WHERE Email='%s';";
+                    sql = String.format(sql, email);
+                    results = statement.executeQuery(sql);
+
+                    if(results.next()) {
+                        logger.info("Could not create user "+username);
+                        results.close();
+                        statement.close();
+                        return EMAIL_EXISTS;
+                    }
+
+                    results.close();
+
+                    sql = "INSERT INTO Users (Username, Password, Email, FirstName, LastName) "+
+                          "VALUES('%s', '%s', '%s', '%s', '%s');";
+                    sql = String.format(sql, username, password, email, firstName, lastName);
+
+                    statement.executeUpdate(sql);
+
+                    logger.info("User "+username+" created successfully!");
+
+                    return USER_SUCCESS;
+                })
+        );
     }
 
     /**
