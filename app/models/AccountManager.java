@@ -7,10 +7,8 @@ import javax.inject.Inject;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-import java.time.Clock;
 
 /**
  * Class for handling user database operations.
@@ -99,11 +97,9 @@ public class AccountManager {
         return CompletableFuture.supplyAsync(() ->
             dataSource.withConnection(conn -> {
                 Statement statement = conn.createStatement();
-                Instant timestamp = Clock.systemUTC().instant();
-                String sql = "UPDATE Users SET LastAccess='%s' WHERE Username='%s';";
-                sql = String.format(sql, timestamp.toString(), username);
+                String sql = "UPDATE Users SET LastAccess=CURRENT_TIMESTAMP WHERE Username='%s';";
+                sql = String.format(sql, username);
 
-                logger.info(timestamp.toString());
                 logger.info("Updating "+username+"'s last access date...");
 
                 statement.executeUpdate(sql);
