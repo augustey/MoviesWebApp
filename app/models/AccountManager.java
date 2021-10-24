@@ -3,13 +3,14 @@ package models;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.Message;
-
 import javax.inject.Inject;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.time.Clock;
 
 /**
  * Class for handling user database operations.
@@ -86,6 +87,33 @@ public class AccountManager {
 
                     return USER_SUCCESS;
                 })
+        );
+    }
+
+    /**
+     * Set the user's last access date to this moment
+     * @param username User to update
+     * @return CompletableStage for asynchronous code
+     */
+    public CompletionStage<Void> setLastAccess(String username) {
+        return CompletableFuture.supplyAsync(() ->
+            dataSource.withConnection(conn -> {
+                Statement statement = conn.createStatement();
+                Instant timestamp = Clock.systemUTC().instant();
+                String sql = "UPDATE Users SET LastAccess='%s' WHERE Username='%s';";
+                sql = String.format(sql, timestamp.toString(), username);
+
+                logger.info(timestamp.toString());
+                logger.info("Updating "+username+"'s last access date...");
+
+                statement.executeUpdate(sql);
+
+                logger.info("Successfully updated "+username+" last access.");
+
+                statement.close();
+
+                return null;
+            })
         );
     }
 
