@@ -16,15 +16,19 @@ body {
     align-items: center;
 }
 
-.header h1 {
+.banner a{
     font-family: 'Fredoka One', cursive;
+    text-decoration: none;
+}
+
+.banner a:visited, .banner a:active, .banner a {
+    color: #222222;
 }
 
 .banner {
     display: flex;
     align-items: baseline;
     padding: 15px 0px;
-    color: #222222;
 }
 
 .banner img {
