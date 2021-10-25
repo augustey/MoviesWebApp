@@ -134,13 +134,14 @@ public class AccountManager {
                         String resultPass = results.getString("Password");
 
                         if (resultPass.equals(password)) {
+                            int userID = results.getInt("UserID");
                             String email = results.getString("Email");
                             String first = results.getString("FirstName");
                             String last = results.getString("LastName");
                             Timestamp creationDate = results.getTimestamp("CreationDate");
                             Timestamp lastAccess = results.getTimestamp("LastAccess");
 
-                            user = new User(username, email, first, last, creationDate, lastAccess);
+                            user = new User(userID, username, email, first, last, creationDate, lastAccess);
 
                             logger.info("User " + username + " successfully retrieved and validated.");
                         }
