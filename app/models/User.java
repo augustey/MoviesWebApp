@@ -6,6 +6,7 @@ import java.sql.Timestamp;
  * A value object representing a user. This class is used
  */
 public class User {
+    private int userID;
     private String username;
     private String email;
     private String firstName;
@@ -22,13 +23,21 @@ public class User {
      * @param creationDate creation date
      * @param lastAccess last access date
      */
-    User(String username, String email, String firstName, String lastName, Timestamp creationDate, Timestamp lastAccess) {
+    User(int userID, String username, String email, String firstName, String lastName, Timestamp creationDate, Timestamp lastAccess) {
+        this.userID = userID;
         this.username = username;
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
         this.creationDate = creationDate;
         this.lastAccess = lastAccess;
+    }
+
+    /**
+     * Getter or userID
+     */
+    public int getUserID() {
+        return userID;
     }
 
     /**
