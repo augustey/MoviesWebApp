@@ -11,6 +11,8 @@ GET     /logout                     controllers.LogoutController.logout(request:
 
 GET     /register                   controllers.RegisterController.register(request: Request)
 
+GET     /collections                controllers.CollectionController.collections(request: Request)
+
 POST    /signin                     controllers.SignInController.verify(request: Request)
 
 POST    /register                   controllers.RegisterController.createUser(request: Request)
