@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fredoka+One&family=Merriweather&display=swap');
 
 * {
     padding: 0;
@@ -81,6 +81,33 @@ body {
     border-radius: 10px;
     border: 1px solid black;
     background-color: #79B4B7;
+}
+
+.sql-table {
+    width: 75%;
+}
+
+.sql-table table{
+    border-collapse: collapse;
+    border: solid 1px #F8F0DF;
+    width: 100%;
+}
+
+.sql-table table th, td {
+    padding: 5px;
+    text-align: center;
+}
+
+.sql-table table th {
+    color: #444444;
+}
+
+.sql-table table tr:nth-child(even) {
+    background-color: #F8F0DF;
+}
+
+.sql-table table tr:nth-child(odd) {
+    background-color: #FEFBF3;
 }
 
 .error {
