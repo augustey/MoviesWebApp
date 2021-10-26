@@ -1,9 +1,22 @@
 @*
-* This template handles an individual movie's page, including its play button
-* and being able to rate it. EXPLAIN PARAMETERS HERE
+* This template handles an individual movie's page, including its play button,
+* being able to rate it, and its general information. EXPLAIN PARAMETERS HERE
 *@
 
-@(user: User)(implicit session: play.mvc.Http.Session)
+@(user: User)(implicit session: play.mvc.Http.Session)(movie: Movie)
 
 <!DOCTYPE html>
 <html lang="en">
+    <head>
+        <title>TO BE FIXED</title>
+        <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
+    </head>
+
+    <body>
+        @header()
+
+        <div class="content">
+
+        </div>
+    </body>
