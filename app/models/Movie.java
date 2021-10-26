@@ -1,5 +1,7 @@
 package models;
 import java.sql.Timestamp;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 /**
  * Represents one movie
@@ -47,5 +49,4 @@ public class Movie {
      * Gets the mpaa rating
      */
     public String getMpaa() { return mpaa; }
-
 }

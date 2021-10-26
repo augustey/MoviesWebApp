@@ -1,6 +1,6 @@
 @*
 * This template handles an individual movie's page, including its play button,
-* being able to rate it, and its general information. EXPLAIN PARAMETERS HERE
+* being able to rate it, and its general information.
 *@
 
 @(user: User, movie: Movie)(implicit session: play.mvc.Http.Session)
@@ -8,7 +8,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>TO BE FIXED</title>
+        <title>@movie.getTitle</title>
         <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
     </head>
@@ -17,8 +17,17 @@
         @header()
 
         <div class="content">
+            <h1>
+                <u>Title:</u> @movie.getTitle
+            </h1>
             <p>
-                Hello!
+                <u>Length:</u> @movie.getLength
+            </p>
+            <p>
+                <u>Release Date:</u> @movie.getReleaseDate
+            </p>
+            <p>
+                <u>MPAA Rating:</u> @movie.getMpaa
             </p>
         </div>
     </body>

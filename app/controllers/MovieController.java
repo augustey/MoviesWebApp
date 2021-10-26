@@ -1,8 +1,12 @@
 package controllers;
+import com.fasterxml.jackson.databind.JsonNode;
 import models.Movie;
 import models.MovieManager;
 import models.User;
+import play.libs.Json;
 import play.mvc.*;
+
+import java.util.concurrent.CompletionStage;
 import javax.inject.Inject;
 
 /**
@@ -30,17 +34,23 @@ public class MovieController extends Controller {
      */
     public Result loadMovie(Http.Request request, int movieID) {
         Http.Session session = request.session();
-        User user = null; // placeholder
-        Movie movie = null; // placeholder
 
-        return ok(views.html.movie.render(user, movie, session));
+        return session.get(SignInController.USER_KEY).map(userJson -> {
+            JsonNode userNode = Json.parse(userJson);
+            final User user = Json.fromJson(userNode, User.class);
 
-        /*
+            movieManager.getMovie(movieID)
+                    .thenApply(movie -> {
+                        return ok(views.html.movie.render(user, movie, session));
+                    });
+        });
+
+/* OLD WAY, no user
         return movieManager.getMovie(movieID)
                 .thenApply(movie -> {
                     return ok(views.html.movie.render(user, movie, session));
                 });
 
-         */
+ */
     }
 }

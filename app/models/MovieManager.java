@@ -75,6 +75,53 @@ public class MovieManager {
     }
 
     /**
-     * TODO Get rating, get video, search video
+     * Play the movie. Updates the database by incrementing the movie's watch count.
+     *
+     * @param movieID the id of the movie to play
+     * @return CompletableStage for asynchronous code
+     */
+    public CompletionStage<Void> playMovie(int userID, int movieID) {
+        return CompletableFuture.supplyAsync(() ->
+            dataSource.withConnection(conn -> {
+                Statement statement = conn.createStatement();
+
+                // Check if watched exists
+                String checkExistsQuery = "SELECT * FROM watches WHERE userid=%d AND movieid=%d";
+                checkExistsQuery = String.format(checkExistsQuery, userID, movieID);
+
+                ResultSet checkExistsResult = statement.executeQuery(checkExistsQuery);
+
+                logger.info("Attempting to play movie...");
+
+                if (checkExistsResult.next()) {
+                    logger.info("Movie found, incrementing times played");
+                    String incrementQuery = "UPDATE watches SET timesplayed = timesplayed + 1 " +
+                            "WHERE userid=%d AND movieid=%d";
+                    incrementQuery = String.format(incrementQuery, userID, movieID);
+
+                    // increment watched
+                    statement.executeQuery(incrementQuery);
+                }
+                else {
+                    // If entry doesn't already exist
+                    logger.info("Movie not found, creating entry");
+
+                    String createWatchedQuery = "INSERT INTO watches (userid, movieid) " +
+                            "VALUES(%d, %d)";
+                    createWatchedQuery = String.format(createWatchedQuery, userID, movieID);
+                    statement.executeQuery(createWatchedQuery);
+                }
+
+                checkExistsResult.close();
+                statement.close();
+
+                return null;
+            })
+        );
+    }
+
+
+    /**
+     * TODO Get rating, rate? (should rating have default of 0) get video, search video
      */
 }
