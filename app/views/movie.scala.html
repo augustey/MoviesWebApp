@@ -3,7 +3,7 @@
 * being able to rate it, and its general information. EXPLAIN PARAMETERS HERE
 *@
 
-@(user: User)(implicit session: play.mvc.Http.Session)(movie: Movie)
+@(user: User, movie: Movie)(implicit session: play.mvc.Http.Session)
 
 <!DOCTYPE html>
 <html lang="en">
@@ -17,6 +17,8 @@
         @header()
 
         <div class="content">
-
+            <p>
+                Hello!
+            </p>
         </div>
     </body>

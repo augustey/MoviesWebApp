@@ -1,6 +1,7 @@
 package controllers;
 import models.Movie;
 import models.MovieManager;
+import models.User;
 import play.mvc.*;
 import javax.inject.Inject;
 
@@ -24,12 +25,22 @@ public class MovieController extends Controller {
 
     /**
      * Loads a movie's page
-     * @param id the id of the movie to load
+     * @param movieID the id of the movie to load
      * @return the response body
      */
     public Result loadMovie(Http.Request request, int movieID) {
         Http.Session session = request.session();
+        User user = null; // placeholder
+        Movie movie = null; // placeholder
 
-        return null;
+        return ok(views.html.movie.render(user, movie, session));
+
+        /*
+        return movieManager.getMovie(movieID)
+                .thenApply(movie -> {
+                    return ok(views.html.movie.render(user, movie, session));
+                });
+
+         */
     }
 }
