@@ -120,8 +120,96 @@ public class MovieManager {
         );
     }
 
-
     /**
-     * TODO Get rating, rate? (should rating have default of 0) get video, search video
+     * Rate a movie. The rating must be between 1 and 5
+     *
+     * @param rating the score
+     * @param userID the user that is rating
+     * @param movieID the movie that is rated
+     * @return CompletableStage for asynchronous code
+     */
+    public CompletionStage<Message> rateMovie(int rating, int userID, int movieID) {
+        return CompletableFuture.supplyAsync(() ->
+                dataSource.withConnection(conn -> {
+                    // Check for bounding
+                    if(rating < 1 || rating > 5) {
+                        return Message.error("Rating must be between 1 and 5!");
+                    }
+
+                    Statement statement = conn.createStatement();
+                    // The message that will be returned
+                    Message message;
+
+                    // Check if watched exists
+                    String checkExistsQuery = "SELECT * FROM watches WHERE userid=%d AND movieid=%d";
+                    checkExistsQuery = String.format(checkExistsQuery, userID, movieID);
+
+                    ResultSet checkExistsResult = statement.executeQuery(checkExistsQuery);
+
+                    logger.info("Attempting to rate movie...");
+
+                    if (checkExistsResult.next()) {
+                        // If entry found
+                        logger.info("Movie found, applying rating");
+
+
+                        String rateQuery = "UPDATE watches SET rating = %d " +
+                                "WHERE userid=%d AND movieid=%d";
+                        rateQuery = String.format(rateQuery, rating, userID, movieID);
+
+                        statement.executeQuery(rateQuery);
+                        message = Message.info("Movie rated successfully!");
+                    }
+                    else {
+                        // If entry doesn't already exist, should not be able to rate
+                        logger.info("Movie not found, cannot rate");
+
+                        message = Message.error("You can't rate a movie you haven't watched!");
+                    }
+
+                    checkExistsResult.close();
+                    statement.close();
+
+                    return message;
+                })
+        );
+    }
+
+
+    public CompletionStage<Double> getRating(int movieID) {
+        return CompletableFuture.supplyAsync(() ->
+                dataSource.withConnection(conn -> {
+                    Statement statement = conn.createStatement();
+                    // message to be returned
+                    double result;
+
+                    String getRatingsQuery = "SELECT COUNT(rating) as count, SUM(rating) as sum" +
+                            " FROM watches WHERE movieid=%d";
+                    getRatingsQuery = String.format(getRatingsQuery, movieID);
+
+                    ResultSet getRatingsResult = statement.executeQuery(getRatingsQuery);
+
+                    logger.info("Attempting to get movie rating...");
+
+                    if (getRatingsResult.next()) {
+                        logger.info("Rating found");
+                        result = getRatingsResult.getDouble("sum") /
+                                getRatingsResult.getDouble("count");
+                    }
+                    else {
+                        // If no ratings
+                        logger.error("Movie has no ratings!");
+                        result = 0; // Will need to check for 0
+                    }
+
+                    getRatingsResult.close();
+                    statement.close();
+
+                    return result;
+                })
+        );
+    }
+    /**
+     * TODO search video
      */
 }
