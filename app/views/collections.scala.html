@@ -10,6 +10,21 @@
     <body>
         @header()
         <div class="content">
+            <div>
+                <form method="GET" action="/collections/create">
+                    <input type="text" name="name" placeholder="Create a new collection"/>
+                    <input type="submit" value="Create"/>
+                </form>
+                <form method="GET" action="/collections/delete">
+                    <select name="collectionid">
+                        <option value=-1>----</option>
+                        @for(col <- collections) {
+                            <option value=@col.getCollectionID>@col.getName</option>
+                        }
+                    </select>
+                    <input type="submit" value="Delete"/>
+                </form>
+            </div>
             <div class="sql-table">
                 <table>
                     <tr>
