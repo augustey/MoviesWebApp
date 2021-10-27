@@ -28,6 +28,25 @@ public class CollectionManager {
         this.logger = LoggerFactory.getLogger(this.getClass());
     }
 
+    public CompletionStage<Void> createCollection(int userID, String name) {
+        return CompletableFuture.supplyAsync(() ->
+                dataSource.withConnection(conn -> {
+                    Statement statement = conn.createStatement();
+                    String sql = "INSERT INTO Collections (UserID, Name) VALUES(%d, '%s');";
+                    sql = String.format(sql, userID, name);
+
+                    logger.info("Creating new collection "+name+"...");
+
+                    statement.executeUpdate(sql);
+
+                    logger.info("Successfully created new collection "+name+"...");
+
+                    statement.close();
+                    return null;
+                })
+        );
+    }
+
     /**
      * Get all the collections owned by a particular user.
      * @param userID UserID corresponding to the user
@@ -37,9 +56,11 @@ public class CollectionManager {
         return CompletableFuture.supplyAsync(() ->
                 dataSource.withConnection(conn -> {
                     Statement statement = conn.createStatement();
-                    String sql = "SELECT C.CollectionID, C.Name, COUNT(M.MovieID) AS Total, SUM(M.Length) AS Length "+
-                                 "FROM Collections AS C, Movies AS M, CollectionMovies AS S "+
-                                 "WHERE M.MovieID=S.MovieID AND C.CollectionID=S.CollectionID AND UserID=%d "+
+                    String sql = "SELECT C.CollectionID, C.Name, COUNT(M.MovieID) AS Total, COALESCE(SUM(M.Length),0) AS Length "+
+                                 "FROM Collections AS C "+
+                                 "LEFT JOIN CollectionMovies AS S ON C.CollectionID=S.CollectionID "+
+                                 "LEFT JOIN Movies AS M ON M.MovieID=S.MovieID "+
+                                 "WHERE UserID=%d "+
                                  "GROUP BY C.CollectionID, C.Name "+
                                  "ORDER BY C.Name;";
                     sql = String.format(sql, userID);
