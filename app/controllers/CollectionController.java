@@ -34,6 +34,17 @@ public class CollectionController {
         this.logger = LoggerFactory.getLogger(this.getClass());
     }
 
+    public CompletionStage<Result> createCollection(Http.Request request, String name) {
+        Http.Session session = request.session();
+        return session.get(SignInController.USER_KEY).map(userJson -> {
+            JsonNode userNode = Json.parse(userJson);
+            User user = Json.fromJson(userNode, User.class);
+
+            return collectionManager.createCollection(user.getUserID(), name).thenApply(collections ->
+                    redirect("/collections"));
+        }).orElseGet(() -> CompletableFuture.completedFuture(redirect("/")));
+    }
+
     /**
      * Serve a template containing a table of the user's collection
      * @param request HTTP request sent to the server
