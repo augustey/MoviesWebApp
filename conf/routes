@@ -5,7 +5,7 @@
 # An example controller showing a sample home page
 GET     /                           controllers.HomeController.index(request: Request)
 
-GET     /signin                     controllers.SignInController.signIn(request: Request, error: Boolean?=false)
+GET     /signin                     controllers.SignInController.signIn(request: Request, error: Boolean ?= false)
 
 GET     /logout                     controllers.LogoutController.logout(request: Request)
 
@@ -14,6 +14,8 @@ GET     /register                   controllers.RegisterController.register(requ
 GET     /collections                controllers.CollectionController.collections(request: Request)
 
 GET     /collections/create         controllers.CollectionController.createCollection(request: Request, name)
+
+GET     /collections/delete         controllers.CollectionController.deleteCollection(collectionid: Int)
 
 POST    /signin                     controllers.SignInController.verify(request: Request)
 
