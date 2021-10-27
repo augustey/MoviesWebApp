@@ -28,9 +28,40 @@ public class CollectionManager {
         this.logger = LoggerFactory.getLogger(this.getClass());
     }
 
+    /**
+     * Delete a collection
+     * @param collectionID The id of the collection to delete
+     * @return A completion stage for asynchronous execution handling
+     */
+    public CompletionStage<Void> deleteCollection(int collectionID) {
+        return CompletableFuture.supplyAsync(() ->
+                dataSource.withConnection(conn -> {
+                    Statement statement = conn.createStatement();
+                    String sql = "DELETE FROM Collections WHERE CollectionID=%d;";
+                    sql = String.format(sql, collectionID);
+
+                    logger.info("Deleting collection "+collectionID+"...");
+
+                    statement.executeUpdate(sql);
+                    statement.close();
+
+                    return null;
+                })
+        );
+    }
+
+    /**
+     * Create a new collection with a given name
+     * @param userID User who owns the collection
+     * @param name The name of the new collection
+     * @return A completion stage for asynchronous execution handling
+     */
     public CompletionStage<Void> createCollection(int userID, String name) {
         return CompletableFuture.supplyAsync(() ->
                 dataSource.withConnection(conn -> {
+                    if(name.strip().equals(""))
+                        return null;
+
                     Statement statement = conn.createStatement();
                     String sql = "INSERT INTO Collections (UserID, Name) VALUES(%d, '%s');";
                     sql = String.format(sql, userID, name);
