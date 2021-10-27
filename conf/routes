@@ -13,6 +13,8 @@ GET     /register                   controllers.RegisterController.register(requ
 
 GET     /collections                controllers.CollectionController.collections(request: Request)
 
+GET     /collections/create         controllers.CollectionController.createCollection(request: Request, name)
+
 POST    /signin                     controllers.SignInController.verify(request: Request)
 
 POST    /register                   controllers.RegisterController.createUser(request: Request)
