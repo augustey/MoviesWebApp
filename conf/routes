@@ -17,6 +17,11 @@ GET     /collections/create         controllers.CollectionController.createColle
 
 GET     /collections/delete         controllers.CollectionController.deleteCollection(collectionid: Int)
 
+GET     /collections/modify         controllers.CollectionController.modifyName(collectionid: Int, name)
+
+
+GET     /collections/:collectionid  controllers.CollectionMoviesController.collectionMovies(request: Request, collectionid: Int)
+
 POST    /signin                     controllers.SignInController.verify(request: Request)
 
 POST    /register                   controllers.RegisterController.createUser(request: Request)
