@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory;
 import play.libs.Json;
 import play.mvc.Http;
 import play.mvc.Result;
+import util.Message;
+
 import javax.inject.Inject;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -34,15 +36,31 @@ public class CollectionController {
         this.logger = LoggerFactory.getLogger(this.getClass());
     }
 
+    /**
+     * Create a new colelction with a given name
+     * @param request Request object
+     * @param name Name of the new collection
+     * @return a redirect to either the home screen or collections page
+     */
     public CompletionStage<Result> createCollection(Http.Request request, String name) {
         Http.Session session = request.session();
         return session.get(SignInController.USER_KEY).map(userJson -> {
             JsonNode userNode = Json.parse(userJson);
             User user = Json.fromJson(userNode, User.class);
 
-            return collectionManager.createCollection(user.getUserID(), name).thenApply(collections ->
-                    redirect("/collections"));
+            return collectionManager.createCollection(user.getUserID(), name).thenApply(result ->
+                    redirect("/collections")
+            );
         }).orElseGet(() -> CompletableFuture.completedFuture(redirect("/")));
+    }
+
+    /**
+     * Delete a collection from
+     * @param collectionID The id of the collection to delete
+     * @return a redirect to the collections page
+     */
+    public CompletionStage<Result> deleteCollection(int collectionID) {
+        return collectionManager.deleteCollection(collectionID).thenApply(result -> redirect("/collections"));
     }
 
     /**
