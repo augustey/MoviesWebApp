@@ -51,6 +51,66 @@ public class CollectionManager {
     }
 
     /**
+     * get a single collection based on the collectionID
+     * @param collectionID The id of the collection to retrieve
+     * @return A completion stage containing the retrieved collection value object
+     */
+    public CompletionStage<MovieCollection> getSingleCollection(int collectionID) {
+        return CompletableFuture.supplyAsync(() ->
+                dataSource.withConnection(conn -> {
+                    Statement statement = conn.createStatement();
+                    String sql = "SELECT * FROM Collections WHERE CollectionID=%d";
+                    sql = String.format(sql, collectionID);
+                    MovieCollection col = null;
+                    ResultSet results = statement.executeQuery(sql);
+
+                    logger.info("Attempting to retrieve collection:"+collectionID+"...");
+
+                    while(results.next()) {
+                        String name = results.getString("Name");
+                        col = new MovieCollection(collectionID, name, 0, 0);
+                        logger.info("Successfully retrieved "+col.getName()+"!");
+                    }
+
+                    if(col == null)
+                        logger.info("Unable to retrieve collection with id "+collectionID);
+
+                    statement.close();
+
+                    return col;
+                })
+        );
+    }
+
+    /**
+     * Update a collections name to the one specified
+     * @param collectionID The collection to update
+     * @param name The new name of the collection
+     * @return A completion stage for asynchronous execution handling
+     */
+    public CompletionStage<Void> updateCollectionName(int collectionID, String name) {
+        return CompletableFuture.supplyAsync(() ->
+                dataSource.withConnection(conn -> {
+                    if(name.strip().equals(""))
+                        return null;
+
+                    Statement statement = conn.createStatement();
+                    String sql = "UPDATE Collections SET Name='%s' WHERE CollectionID=%d;";
+                    sql = String.format(sql, name, collectionID);
+
+                    logger.info("Changing collection "+collectionID+" name to "+name+"...");
+
+                    statement.executeUpdate(sql);
+                    logger.info("Successfully changed colelction name");
+
+
+                    statement.close();
+                    return null;
+                })
+        );
+    }
+
+    /**
      * Create a new collection with a given name
      * @param userID User who owns the collection
      * @param name The name of the new collection
