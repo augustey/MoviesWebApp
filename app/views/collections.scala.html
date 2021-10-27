@@ -34,9 +34,9 @@
                     </tr>
                     @for(col <- collections) {
                         <tr>
-                            <td>@col.getName()</td>
-                            <td>@col.getTotal()</td>
-                            <td>@col.getLengthFormat()</td>
+                            <td><a href=@{"/collections/"+col.getCollectionID}>@col.getName</a></td>
+                            <td>@col.getTotal</td>
+                            <td>@col.getLengthFormat</td>
                         </tr>
                     }
                     <tr>

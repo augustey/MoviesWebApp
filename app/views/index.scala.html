@@ -17,9 +17,9 @@
         @header()
     <div class="content">
         @if(user != null) {
-            <p>Welcome @user.getFirstName()</p>
-            <p><u>Last Access:</u> @user.getLastAccess().toString()</p>
-            <p><u>Account Created:</u> @user.getCreationDate().toString()</p>
+            <p>Welcome @user.getFirstName</p>
+            <p><u>Last Access:</u> @user.getLastAccess</p>
+            <p><u>Account Created:</u> @user.getCreationDate</p>
         } else {
             <p>You are not signed in.</p>
         }
