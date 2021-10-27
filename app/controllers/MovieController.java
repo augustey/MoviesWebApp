@@ -32,25 +32,15 @@ public class MovieController extends Controller {
      * @param movieID the id of the movie to load
      * @return the response body
      */
-    public Result loadMovie(Http.Request request, int movieID) {
+    public CompletionStage<Result> loadMovie(Http.Request request, int movieID) {
         Http.Session session = request.session();
 
-        return session.get(SignInController.USER_KEY).map(userJson -> {
-            JsonNode userNode = Json.parse(userJson);
-            final User user = Json.fromJson(userNode, User.class);
+        User user = null;
 
-            movieManager.getMovie(movieID)
-                    .thenApply(movie -> {
-                        return ok(views.html.movie.render(user, movie, session));
-                    });
-        });
-
-/* OLD WAY, no user
         return movieManager.getMovie(movieID)
                 .thenApply(movie -> {
                     return ok(views.html.movie.render(user, movie, session));
                 });
 
- */
     }
 }
