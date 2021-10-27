@@ -10,8 +10,8 @@
     <body>
         @header()
         <div class="content">
+            <span class="heading"><h1>@collection.getName</h1></span>
             <div>
-                <span class="heading"><h1>@collection.getName</h1></span>
                 <form method="GET" action="/collections/modify">
                     <input type="text" name="name" placeholder="Change collection name"/>
                     <input type="hidden" name="collectionid" value="@collection.getCollectionID"/>
