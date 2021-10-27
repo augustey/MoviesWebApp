@@ -64,6 +64,18 @@ public class CollectionController {
     }
 
     /**
+     * Update the name of the collection
+     * @param collectionID The collection to update
+     * @param name The new name of the collection
+     * @return a redirect back to collections
+     */
+    public CompletionStage<Result> modifyName(int collectionID, String name) {
+        return collectionManager.updateCollectionName(collectionID, name).thenApply(
+                result -> redirect("/collections")
+        );
+    }
+
+    /**
      * Serve a template containing a table of the user's collection
      * @param request HTTP request sent to the server
      * @return Response containing the collections template
