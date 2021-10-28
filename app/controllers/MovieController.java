@@ -3,9 +3,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 import models.Movie;
 import models.MovieManager;
 import models.User;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import play.libs.Json;
 import play.mvc.*;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import javax.inject.Inject;
 
@@ -16,6 +19,7 @@ import javax.inject.Inject;
  */
 public class MovieController extends Controller {
     private final MovieManager movieManager;
+    private final Logger logger;
 
     /**
      * Constructor
@@ -25,6 +29,7 @@ public class MovieController extends Controller {
     @Inject
     public MovieController(MovieManager movieManager) {
         this.movieManager = movieManager;
+        this.logger = LoggerFactory.getLogger(this.getClass());
     }
 
     /**
@@ -35,12 +40,24 @@ public class MovieController extends Controller {
     public CompletionStage<Result> loadMovie(Http.Request request, int movieID) {
         Http.Session session = request.session();
 
-        User user = null;
+        return request.session().get(SignInController.USER_KEY).map(userJson -> {
+            JsonNode userNode = Json.parse(userJson);
+            User user = Json.fromJson(userNode, User.class);
 
-        return movieManager.getMovie(movieID)
-                .thenApply(movie -> {
-                    return ok(views.html.movie.render(user, movie, session));
-                });
+            logger.info("Attempting to find movie...");
+            return movieManager.getMovie(movieID)
+                    .thenApply(movie -> {
+                        logger.info("Found movie");
+                        return ok(views.html.movie.render(user, movie, session));
+                    });
+        }).orElseGet(() -> {
+            return movieManager.getMovie(movieID)
+                    .thenApply(movie -> {
+                        logger.info("Found movie");
+                        return ok(views.html.movie.render(null, movie, session));
+                    });
+        });
+
 
     }
 }

@@ -8,7 +8,12 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>@movie.getTitle</title>
+        @if(movie != null) {
+            <title>@movie.getTitle</title>
+        } else {
+            <title>Movie not found!</title>
+        }
+
         <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">
         <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
     </head>
@@ -17,17 +22,23 @@
         @header()
 
         <div class="content">
-            <h1>
-                <u>Title:</u> @movie.getTitle
-            </h1>
-            <p>
-                <u>Length:</u> @movie.getLength
-            </p>
-            <p>
-                <u>Release Date:</u> @movie.getReleaseDate
-            </p>
-            <p>
-                <u>MPAA Rating:</u> @movie.getMpaa
-            </p>
+            @if(movie != null) {
+
+                <h1>
+                    <u>Title:</u> @movie.getTitle
+                </h1>
+                <p>
+
+                    <u>Length:</u> @movie.lengthToString
+                </p>
+                <p>
+                    <u>Release Date:</u> @movie.releaseDateString()
+                </p>
+                <p>
+                    <u>MPAA Rating:</u> @movie.getMpaa
+                </p>
+            } else {
+                <h1>Movie not found!</h1>
+            }
         </div>
     </body>
