@@ -1,0 +1,44 @@
+@*
+* This template handles an individual movie's page, including its play button,
+* being able to rate it, and its general information.
+*@
+
+@(user: User, movie: Movie)(implicit session: play.mvc.Http.Session)
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        @if(movie != null) {
+            <title>@movie.getTitle</title>
+        } else {
+            <title>Movie not found!</title>
+        }
+
+        <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
+    </head>
+
+    <body>
+        @header()
+
+        <div class="content">
+            @if(movie != null) {
+
+                <h1>
+                    <u>Title:</u> @movie.getTitle
+                </h1>
+                <p>
+
+                    <u>Length:</u> @movie.lengthToString
+                </p>
+                <p>
+                    <u>Release Date:</u> @movie.releaseDateString()
+                </p>
+                <p>
+                    <u>MPAA Rating:</u> @movie.getMpaa
+                </p>
+            } else {
+                <h1>Movie not found!</h1>
+            }
+        </div>
+    </body>
