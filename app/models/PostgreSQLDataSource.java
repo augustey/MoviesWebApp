@@ -36,7 +36,7 @@ public class PostgreSQLDataSource implements DataSource{
      * @return any value of type T that the calling class expects.
      */
     @Override
-    public <T> T withConnection(DataSourceCallable<T> callable) {
+    public synchronized <T> T withConnection(DataSourceCallable<T> callable) {
         String username = config.getString("username");
         String password = config.getString("password");
         String host = config.getString("host");
