@@ -3,7 +3,7 @@
 * being able to rate it, and its general information.
 *@
 
-@(user: User, movie: Movie)(implicit session: play.mvc.Http.Session)
+@(user: User, movie: Movie, rating: Double)(implicit session: play.mvc.Http.Session)
 
 <!DOCTYPE html>
 <html lang="en">
@@ -36,6 +36,9 @@
                 </p>
                 <p>
                     <u>MPAA Rating:</u> @movie.getMpaa
+                </p>
+                <p>
+                    <u>User Rating:</u> @rating
                 </p>
             } else {
                 <h1>Movie not found!</h1>

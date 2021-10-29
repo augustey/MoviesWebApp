@@ -24,7 +24,7 @@ public class MovieManager {
 
     /**
      * Constructor for MovieManager
-     * @param dataSource
+     * @param dataSource sql data source
      */
     @Inject
     public MovieManager(DataSource dataSource) {
@@ -209,6 +209,7 @@ public class MovieManager {
                 })
         );
     }
+
     /**
      * TODO search video
      */

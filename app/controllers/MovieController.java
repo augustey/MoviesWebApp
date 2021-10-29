@@ -45,18 +45,36 @@ public class MovieController extends Controller {
             User user = Json.fromJson(userNode, User.class);
 
             logger.info("Attempting to find movie...");
+
+            //  OLD WAY, NO RATING
             return movieManager.getMovie(movieID)
                     .thenApply(movie -> {
                         logger.info("Found movie");
-                        return ok(views.html.movie.render(user, movie, session));
+
+                        return  ok(views.html.movie.render(user, movie, null, session));
                     });
+
+
+            /* NEW WAY to try and pass rating into template
+            return movieManager.getMovie(movieID)
+                    .thenApply(movie -> {
+                        logger.info("Found movie");
+
+                        return movieManager.getRating(movieID)
+                                .thenApply(rating -> ok(views.html.movie.render(user, movie, rating, session)));
+                    });
+
+             */
+
+
         }).orElseGet(() -> {
             return movieManager.getMovie(movieID)
                     .thenApply(movie -> {
                         logger.info("Found movie");
-                        return ok(views.html.movie.render(null, movie, session));
+                        return ok(views.html.movie.render(null, movie, (double) 0, session));
                     });
         });
+
 
 
     }
