@@ -8,7 +8,6 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
@@ -21,7 +20,6 @@ public class AccountManager {
     private final Logger logger;
     private final Message USER_EXISTS = Message.error("User already exists");
     private final Message EMAIL_EXISTS = Message.error("Email already in use");
-
     private final Message USER_SUCCESS = Message.info("User created");
 
 
@@ -37,20 +35,69 @@ public class AccountManager {
     }
 
     /**
+     * Follow a user
+     * @param followerID The user who is following
+     * @param followedID The user that is being followed
+     * @return A completion stage indicating the end of the operation
+     */
+    public CompletionStage<Void> followUser(int followerID, int followedID) {
+        return CompletableFuture.supplyAsync(() ->
+                dataSource.withConnection(conn -> {
+                    Statement statement = conn.createStatement();
+                    String sql = "INSERT INTO Follows VALUES(%d, %d) ON CONFLICT DO NOTHING;";
+                    sql = String.format(sql, followerID, followedID);
+
+                    statement.executeUpdate(sql);
+
+                    logger.info("user:"+followerID+" followed user:"+followedID);
+
+                    statement.close();
+
+                    return null;
+                })
+        );
+    }
+
+    /**
+     * Unollow a user
+     * @param followerID The user who is unfollowing
+     * @param followedID The user that is being unfollowed
+     * @return A completion stage indicating the end of the operation
+     */
+    public CompletionStage<Void> unfollowUser(int followerID, int followedID) {
+        return CompletableFuture.supplyAsync(() ->
+                dataSource.withConnection(conn -> {
+                    Statement statement = conn.createStatement();
+                    String sql = "DELETE FROM Follows WHERE followeruserid=%d AND followeduserid=%d";
+                    sql = String.format(sql, followerID, followedID);
+
+                    statement.executeUpdate(sql);
+
+                    logger.info("user:"+followerID+" unfollowed user:"+followedID);
+
+                    statement.close();
+
+                    return null;
+                })
+        );
+    }
+
+    /**
      * Get all the users in the database in the context of a specific user.
      * @param mainUserID The userid of the context of the search
      * @return A map of users and whether they are followed by the user or not
      */
-    public CompletionStage<LinkedHashMap<User, Boolean>> getAllUsers(int mainUserID) {
+    public CompletionStage<LinkedHashMap<User, Boolean>> getAllUsers(int mainUserID, String query) {
         return CompletableFuture.supplyAsync(() ->
                 dataSource.withConnection(conn -> {
                     Statement statement = conn.createStatement();
                     String sql = "SELECT UserID, Username, Email, COUNT(FollowerUserID) AS Following "+
                                  "FROM Users LEFT JOIN Follows "+
                                  "ON FollowerUserID=%d AND FollowedUserID=UserID "+
+                                 "WHERE LOWER(Email) LIKE '%%%s%%' "+
                                  "GROUP BY Username, Email, UserID "+
                                  "ORDER BY Following DESC;";
-                    sql = String.format(sql, mainUserID);
+                    sql = String.format(sql, mainUserID, query.toLowerCase());
                     LinkedHashMap<User, Boolean> users = new LinkedHashMap<>();
                     ResultSet results = statement.executeQuery(sql);
 
