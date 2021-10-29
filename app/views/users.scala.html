@@ -1,0 +1,37 @@
+@(users: LinkedHashMap[User, Boolean])(implicit session: play.mvc.Http.Session)
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Movies</title>
+        <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
+    </head>
+    <body>
+        @header()
+        <div class="content">
+            <span class="heading"><h1>All users</h1></span>
+            <div class="sql-table">
+                <table>
+                    <tr>
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Following</th>
+                    </tr>
+                    @for((user, isFollowing) <- users.asScala) {
+                        <tr>
+                            <td>@user.getUsername</td>
+                            <td>@user.getEmail</td>
+                            <td>@isFollowing</td>
+                        </tr>
+                    }
+                    <tr>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </body>
+</html>
