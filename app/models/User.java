@@ -1,6 +1,7 @@
 package models;
 
 import java.sql.Timestamp;
+import java.util.Objects;
 
 /**
  * A value object representing a user. This class is used
@@ -80,5 +81,18 @@ public class User {
      */
     public Timestamp getLastAccess() {
         return lastAccess;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return userID == user.userID && username.equals(user.username) && email.equals(user.email) && Objects.equals(firstName, user.firstName) && Objects.equals(lastName, user.lastName);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userID, username, email);
     }
 }
