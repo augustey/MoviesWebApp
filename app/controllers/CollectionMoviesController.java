@@ -11,7 +11,6 @@ import javax.inject.Inject;
 import java.util.concurrent.CompletionStage;
 
 import static play.mvc.Results.ok;
-import static play.mvc.Results.redirect;
 
 /**
  * This controller handles routes and actions related to a specific user collection
