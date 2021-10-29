@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.Message;
 
-import java.sql.Timestamp;
+import java.util.Date;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.sql.Statement;
@@ -53,7 +53,7 @@ public class MovieManager {
                     if(results.next()) {
                         String title = results.getString("title");
                         int length = results.getInt("length");
-                        Timestamp releaseDate = results.getTimestamp("releaseDate");
+                        Date releaseDate = results.getDate("releaseDate");
                         String mpaa = results.getString("mpaa");
 
                         movie = new Movie(movieID, title, length, releaseDate, mpaa);

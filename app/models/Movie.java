@@ -1,11 +1,6 @@
 package models;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
+
 import java.util.Date;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 
 /**
  * Represents one movie
@@ -16,7 +11,7 @@ public class Movie {
     private int movieID;
     private String title;
     private int length;
-    private Timestamp releaseDate;
+    private Date releaseDate;
     private String mpaa;
 
     /**
@@ -26,7 +21,7 @@ public class Movie {
      * @param releaseDate date released
      * @param mpaa rating
      */
-    public Movie(int movieID, String title, int length, Timestamp releaseDate, String mpaa) {
+    public Movie(int movieID, String title, int length, Date releaseDate, String mpaa) {
         this.movieID = movieID;
         this.title = title;
         this.length = length;
@@ -47,7 +42,7 @@ public class Movie {
     /**
      * Gets the release date
      */
-    public Timestamp getReleaseDate() {
+    public Date getReleaseDate() {
         return releaseDate;
     }
 
@@ -66,16 +61,5 @@ public class Movie {
         String minutes = String.valueOf(length % 60);
 
         return hours + "hr " + minutes + "min";
-    }
-
-    public String releaseDateString() {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(releaseDate);
-
-        String year = String.valueOf(calendar.get(Calendar.YEAR));
-        String month = String.valueOf(calendar.get(Calendar.MONTH) + 1);
-        String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
-
-        return year + "-" + month + "-" + day;
     }
 }
