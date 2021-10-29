@@ -51,6 +51,7 @@ public class UsersController {
         }
 
         return accountManager.getAllUsers(userID, query).thenApply(users ->
+            //IntelliJ highlights this as an error but it works fine
             ok(views.html.users.render(users, query, session))
         );
     }
