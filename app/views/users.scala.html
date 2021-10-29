@@ -1,4 +1,4 @@
-@(users: LinkedHashMap[User, Boolean])(implicit session: play.mvc.Http.Session)
+@(users: LinkedHashMap[User, Boolean])(query: String)(implicit session: play.mvc.Http.Session)
 
 <!DOCTYPE html>
 <html lang="en">
@@ -10,19 +10,31 @@
     <body>
         @header()
         <div class="content">
-            <span class="heading"><h1>All users</h1></span>
+            @if(query != "") {
+                <p>Showing @users.size results for '@query'</p>
+            }
+            <form method="GET" action="/users">
+                <input type="text" name="q" placeholder="Search for email"/>
+                <input type="submit" value="Search"/>
+            </form>
             <div class="sql-table">
                 <table>
                     <tr>
                         <th>Username</th>
                         <th>Email</th>
-                        <th>Following</th>
+                        <th></th>
                     </tr>
                     @for((user, isFollowing) <- users.asScala) {
                         <tr>
                             <td>@user.getUsername</td>
                             <td>@user.getEmail</td>
-                            <td>@isFollowing</td>
+                            <td>
+                                @if(isFollowing){
+                                    <a href=@{"/users/unfollow?followedid="+user.getUserID}>Unfollow</a>
+                                }else {
+                                    <a href=@{"/users/follow?followedid="+user.getUserID}>Follow</a>
+                                }
+                            </td>
                         </tr>
                     }
                     <tr>
