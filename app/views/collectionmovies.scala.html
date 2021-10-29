@@ -1,4 +1,4 @@
-@(collection: MovieCollection)(implicit session: play.mvc.Http.Session)
+@(collectionID: Int)(movies: List[Movie])(implicit session: play.mvc.Http.Session)
 
 <!DOCTYPE html>
 <html lang="en">
@@ -10,13 +10,36 @@
     <body>
         @header()
         <div class="content">
-            <span class="heading"><h1>@collection.getName</h1></span>
             <div>
                 <form method="GET" action="/collections/modify">
                     <input type="text" name="name" placeholder="Change collection name"/>
-                    <input type="hidden" name="collectionid" value="@collection.getCollectionID"/>
+                    <input type="hidden" name="collectionid" value="@collectionID"/>
                     <input type="submit" value="Update"/>
                 </form>
+            </div>
+            <div class="sql-table">
+                <table>
+                    <tr>
+                        <th>Title</th>
+                        <th>Length</th>
+                        <th>Release Date</th>
+                        <th>Rating</th>
+                    </tr>
+                    @for(mov <- movies) {
+                        <tr>
+                            <td>@mov.getTitle</td>
+                            <td>@mov.lengthToString</td>
+                            <td>@mov.getReleaseDate</td>
+                            <td>@mov.getMpaa</td>
+                        </tr>
+                    }
+                    <tr>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                    </tr>
+                </table>
             </div>
         </div>
     </body>
