@@ -6,6 +6,7 @@ import javax.inject.Inject;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -26,6 +27,36 @@ public class CollectionManager {
     CollectionManager(DataSource dataSource) {
         this.dataSource = dataSource;
         this.logger = LoggerFactory.getLogger(this.getClass());
+    }
+
+    public CompletionStage<List<Movie>> getCollectionMovies(int collectionID) {
+        return CompletableFuture.supplyAsync(() ->
+                dataSource.withConnection(conn -> {
+                    Statement statement = conn.createStatement();
+                    String sql = "SELECT * FROM Movies AS M, CollectionMovies AS C WHERE M.MovieID=C.MovieID AND C.CollectionID=%d;";
+                    sql = String.format(sql, collectionID);
+                    List<Movie> movies = new ArrayList<>();
+                    ResultSet results = statement.executeQuery(sql);
+
+                    logger.info("Attempting to retrieve movies for CollectionID:"+collectionID+"...");
+
+                    while(results.next()) {
+                        int movieID = results.getInt("MovieID");
+                        String title = results.getString("Title");
+                        int length = results.getInt("Length");
+                        String mpaa = results.getString("MPAA");
+                        Date releaseDate = results.getDate("ReleaseDate");
+
+                        Movie movie = new Movie(movieID, title, length, releaseDate, mpaa);
+
+                        movies.add(movie);
+                    }
+
+                    logger.info("Successfully retrieved "+movies.size()+" movies for CollectionID: "+collectionID);
+
+                    return movies;
+                })
+        );
     }
 
     /**
