@@ -19,6 +19,7 @@ GET     /collections/delete         controllers.CollectionController.deleteColle
 
 GET     /collections/modify         controllers.CollectionController.modifyName(collectionid: Int, name)
 
+GET     /users                      controllers.UsersController.users(request: Request)
 
 GET     /collections/:collectionid  controllers.CollectionMoviesController.collectionMovies(request: Request, collectionid: Int)
 
