@@ -37,8 +37,8 @@ public class CollectionMoviesController {
      */
     public CompletionStage<Result> collectionMovies(Http.Request request, int collectionID) {
         Http.Session session = request.session();
-        return collectionManager.getSingleCollection(collectionID).thenApply(collection ->
-                ok(views.html.collectionmovies.render(collection, session))
+        return collectionManager.getCollectionMovies(collectionID).thenApply(movies ->
+                ok(views.html.collectionmovies.render(collectionID, movies, session))
         );
     }
 }
