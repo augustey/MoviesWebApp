@@ -37,7 +37,7 @@ public class UsersController {
      * @param request HTTP request
      * @return a response containing the users template
      */
-    public CompletionStage<Result> users(Http.Request request) {
+    public CompletionStage<Result> users(Http.Request request, String query) {
         Http.Session session = request.session();
         int  userID;
 
@@ -50,10 +50,8 @@ public class UsersController {
             userID = -1;
         }
 
-        logger.info("USERID: "+userID);
-
-        return accountManager.getAllUsers(userID).thenApply(users ->
-            ok(views.html.users.render(users, session))
+        return accountManager.getAllUsers(userID, query).thenApply(users ->
+            ok(views.html.users.render(users, query, session))
         );
     }
 }
