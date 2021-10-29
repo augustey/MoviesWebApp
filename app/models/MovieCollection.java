@@ -56,6 +56,6 @@ public class MovieCollection {
      * Getter for length formatted to (hours:minutes)
      */
     public String getLengthFormat() {
-        return (int)Math.floor(length/60) + ":" + length%60;
+        return (int)Math.floor(length/60) + "hr " + length%60+"min";
     }
 }
