@@ -7,6 +7,8 @@ import javax.inject.Inject;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
@@ -32,6 +34,46 @@ public class AccountManager {
     AccountManager(DataSource dataSource) {
         this.dataSource = dataSource;
         this.logger = LoggerFactory.getLogger(this.getClass());
+    }
+
+    /**
+     * Get all the users in the database in the context of a specific user.
+     * @param mainUserID The userid of the context of the search
+     * @return A map of users and whether they are followed by the user or not
+     */
+    public CompletionStage<LinkedHashMap<User, Boolean>> getAllUsers(int mainUserID) {
+        return CompletableFuture.supplyAsync(() ->
+                dataSource.withConnection(conn -> {
+                    Statement statement = conn.createStatement();
+                    String sql = "SELECT UserID, Username, Email, COUNT(FollowerUserID) AS Following "+
+                                 "FROM Users LEFT JOIN Follows "+
+                                 "ON FollowerUserID=%d AND FollowedUserID=UserID "+
+                                 "GROUP BY Username, Email, UserID "+
+                                 "ORDER BY Following DESC;";
+                    sql = String.format(sql, mainUserID);
+                    LinkedHashMap<User, Boolean> users = new LinkedHashMap<>();
+                    ResultSet results = statement.executeQuery(sql);
+
+                    logger.info("Retrieving users...");
+
+                    while(results.next()) {
+                        int userID = results.getInt("UserID");
+                        String username = results.getString("Username");
+                        String email = results.getString("Email");
+                        boolean isFollowing = results.getBoolean("Following");
+
+                        User user = new User(userID, username, email, null, null, null, null);
+                        users.put(user, isFollowing);
+                    }
+
+                    logger.info("Successfully retrieved all users.");
+
+                    results.close();
+                    statement.close();
+
+                    return users;
+                })
+        );
     }
 
     /**
