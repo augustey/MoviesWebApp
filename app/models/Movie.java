@@ -54,6 +54,19 @@ public class Movie {
     }
 
     /**
+     * Constructor for movie with only rating as a derived attribute
+     * @param movieID Movie id of the movie
+     * @param title Title of the movie
+     * @param length Length of the movie
+     * @param releaseDate Release date of the movie
+     * @param mpaa MPAA rating of the movie
+     * @param rating user rating
+     */
+    public Movie(int movieID, String title, int length, Date releaseDate, String mpaa, double rating){
+        this(movieID, title, length, releaseDate, mpaa, rating, null, null);
+    }
+
+    /**
      * Gets the title
      */
     public String getTitle() { return title; }

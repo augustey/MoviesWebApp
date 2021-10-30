@@ -3,7 +3,7 @@
 * being able to rate it, and its general information.
 *@
 
-@(user: User, movie: Movie, rating: Double)(implicit session: play.mvc.Http.Session)
+@(user: User, movie: Movie, playMsg: String, ratingMsg: String)(implicit session: play.mvc.Http.Session)
 
 <!DOCTYPE html>
 <html lang="en">
@@ -38,8 +38,31 @@
                     <u>MPAA Rating:</u> @movie.getMpaa
                 </p>
                 <p>
-                    <u>User Rating:</u> @rating
+                    <u>User Rating:</u> @movie.getRating
                 </p>
+                <form action="/movie/@movie.getMovieID/play" method="GET">
+                    <input type="submit" value="Play Movie"/>
+                    <input type="hidden" value="@movie.getMovieID" name="movieID"/>
+                </form>
+                @if(playMsg != null) {
+                    <p>@playMsg</p>
+                }
+
+                <form action="/movie/@movie.getMovieID/rate" method="POST" enctype="application/x-www-form-urlencoded">
+                    <label>Rate movie:</label>
+                    <select name="rating">
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                    </select>
+                    <input type="submit" value="Submit"/>
+                </form>
+                @if(ratingMsg != null) {
+                    <p>@ratingMsg</p>
+                }
+
             } else {
                 <h1>Movie not found!</h1>
             }

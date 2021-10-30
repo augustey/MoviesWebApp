@@ -46,20 +46,26 @@ public class MovieManager {
                 dataSource.withConnection(conn -> {
                     Statement statement = conn.createStatement();
 
-                    String sql = "SELECT * FROM movies WHERE movieid = %d;";
+                    String sql = "SELECT M.MovieID AS MovieID, Title, Length, MPAA, ReleaseDate, ROUND(AVG(Rating),1) AS Rating " +
+                            "FROM Movies AS M JOIN Watches AS W ON M.MovieID=W.MovieID " +
+                            "WHERE M.MovieID = %d " +
+                            "GROUP BY M.MovieID;";
                     sql = String.format(sql, movieID);
+
+                    logger.info("QUERY: " + sql);
 
                     logger.info("Attempting to fetch movie " + movieID + "...");
                     ResultSet results = statement.executeQuery(sql);
                     Movie movie = null;
 
                     if(results.next()) {
-                        String title = results.getString("title");
-                        int length = results.getInt("length");
-                        Date releaseDate = results.getDate("releaseDate");
-                        String mpaa = results.getString("mpaa");
+                        String title = results.getString("Title");
+                        int length = results.getInt("Length");
+                        Date releaseDate = results.getDate("ReleaseDate");
+                        String mpaa = results.getString("MPAA");
+                        double rating = results.getDouble("Rating");
 
-                        movie = new Movie(movieID, title, length, releaseDate, mpaa);
+                        movie = new Movie(movieID, title, length, releaseDate, mpaa, rating);
                     }
 
                     if(movie == null) {

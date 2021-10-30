@@ -35,5 +35,9 @@ POST    /register                   controllers.RegisterController.createUser(re
 
 GET     /movie/:movieID             controllers.MovieController.loadMovie(request: Request, movieID: Int)
 
+GET     /movie/:movieID/play        controllers.MovieController.movieWatched(request: Request, movieID: Int)
+
+POST    /movie/:movieID/rate        controllers.MovieController.movieRated(request: Request, movieID: Int)
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
