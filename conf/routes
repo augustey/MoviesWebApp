@@ -27,6 +27,8 @@ GET     /users/unfollow             controllers.FollowController.unfollow(reques
 
 GET     /collections/:collectionid  controllers.CollectionMoviesController.collectionMovies(request: Request, collectionid: Int)
 
+GET     /search                     controllers.MovieSearchController.search(request: Request, q?="N/A", c: Int?=0, s: Int?=0, a: Boolean?=true)
+
 POST    /signin                     controllers.SignInController.verify(request: Request)
 
 POST    /register                   controllers.RegisterController.createUser(request: Request)
