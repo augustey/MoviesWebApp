@@ -1,0 +1,71 @@
+@(movies: LinkedHashSet[Movie])(query: String)(implicit session: play.mvc.Http.Session)
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Movies</title>
+        <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
+    </head>
+    <body>
+        @header()
+        <div class="content">
+            <form method="GET" action="/search">
+                <input type="text" value="@query" name="q" placeholder="Search for movie"/>
+                <label>Search by:</label>
+                <select name="c">
+                    <option value=0>Title</option>
+                    <option value=1>Release Date</option>
+                    <option value=2>Studio</option>
+                    <option value=3>Cast Members</option>
+                    <option value=4>Directors</option>
+                    <option value=5>Genre</option>
+                </select>
+                <label>Sort by:</label>
+                <select name="s">
+                    <option value=0>----</option>
+                    <option value=1>Title</option>
+                    <option value=2>Release Date</option>
+                    <option value=3>Studio</option>
+                    <option value=6>Genre</option>
+                </select>
+                <label>Order:</label>
+                <select name="a">
+                    <option value=1>Ascending</option>
+                    <option value=0>Descending</option>
+                </select>
+                <input type="submit" value="Search"/>
+            </form>
+            <div class="sql-table" style="width: 90%; font-size: 12px">
+                <table>
+                    <tr>
+                        <th>Title</th>
+                        <th style="width:100px">Length</th>
+                        <th>MPAA</th>
+                        <th>Rating</th>
+                        <th style="width:200px">Directors</th>
+                        <th>CastMembers</th>
+                    </tr>
+                    @for(mov <- scala.collection.mutable.LinkedHashSet.empty[Movie] ++movies) {
+                        <tr>
+                            <td><a href=@{"/movie/"+mov.getMovieID}>@mov.getTitle</a></td>
+                            <td>@mov.lengthToString</td>
+                            <td>@mov.getMpaa</td>
+                            <td>@mov.getRating</td>
+                            <td>@mov.getDirectors</td>
+                            <td>@mov.getCastMembers</td>
+                        </tr>
+                    }
+                    <tr>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                        <td>...</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </body>
+</html>
