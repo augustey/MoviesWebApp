@@ -3,7 +3,7 @@
 * being able to rate it, and its general information.
 *@
 
-@(user: User, movie: Movie, playMsg: String, ratingMsg: String)(implicit session: play.mvc.Http.Session)
+@(user: User, movie: Movie, playMsg: String, ratingMsg: String, collections: List[MovieCollection])(implicit session: play.mvc.Http.Session)
 
 <!DOCTYPE html>
 <html lang="en">
@@ -62,6 +62,10 @@
                 @if(ratingMsg != null) {
                     <p>@ratingMsg</p>
                 }
+
+                <h2>Add to collections:</h2>
+
+
 
             } else {
                 <h1>Movie not found!</h1>

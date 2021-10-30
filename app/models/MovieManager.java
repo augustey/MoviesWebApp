@@ -109,7 +109,7 @@ public class MovieManager {
                     incrementQuery = String.format(incrementQuery, userID, movieID);
 
                     // increment watched
-                    statement.executeQuery(incrementQuery);
+                    statement.executeUpdate(incrementQuery);
                 }
                 else {
                     // If entry doesn't already exist
@@ -118,7 +118,7 @@ public class MovieManager {
                     String createWatchedQuery = "INSERT INTO watches (userid, movieid) " +
                             "VALUES(%d, %d)";
                     createWatchedQuery = String.format(createWatchedQuery, userID, movieID);
-                    statement.executeQuery(createWatchedQuery);
+                    statement.executeUpdate(createWatchedQuery);
                 }
 
                 checkExistsResult.close();
@@ -166,7 +166,7 @@ public class MovieManager {
                                 "WHERE userid=%d AND movieid=%d";
                         rateQuery = String.format(rateQuery, rating, userID, movieID);
 
-                        statement.executeQuery(rateQuery);
+                        statement.executeUpdate(rateQuery);
                         message = Message.info("Movie rated successfully!");
                     }
                     else {

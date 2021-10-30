@@ -1,5 +1,7 @@
 package controllers;
 import com.fasterxml.jackson.databind.JsonNode;
+import models.CollectionManager;
+import models.Movie;
 import models.MovieManager;
 import models.User;
 import org.slf4j.Logger;
@@ -21,9 +23,10 @@ import javax.inject.Inject;
 public class MovieController extends Controller {
     private final MovieManager movieManager;
     private final Logger logger;
+    private final CollectionManager collectionManager;
 
     private final static String PLAY_RESULT = "playResult";
-    private final static String PLAY_SUCCESSFUL = "Sucessfully played movie!";
+    private final static String PLAY_SUCCESSFUL = "Successfully played movie!";
     private final static String PLAY_FAILED = "User not logged in, movie not played.";
 
     private final static String RATING_RESULT = "ratingResult";
@@ -36,9 +39,10 @@ public class MovieController extends Controller {
      * @param movieManager the movieManager object used
      */
     @Inject
-    public MovieController(MovieManager movieManager) {
+    public MovieController(MovieManager movieManager, CollectionManager collectionManager) {
         this.movieManager = movieManager;
         this.logger = LoggerFactory.getLogger(this.getClass());
+        this.collectionManager = collectionManager;
     }
 
     /**
@@ -52,43 +56,56 @@ public class MovieController extends Controller {
         // results from play or rate calls
         String playResult;
         String ratingResult;
+        String userJson;
 
         try{
             playResult = session.get(PLAY_RESULT).get();
             ratingResult = session.get(RATING_RESULT).get();
+            userJson =  session.get(SignInController.USER_KEY).get();
+
         }
         catch(NoSuchElementException e){
+            logger.info("NO SUCH ELEMENT");
+
             playResult = null;
             ratingResult = null;
+            userJson = null;
         }
 
         final String finalPlayResult = playResult;
         final String finalRatingResult = ratingResult;
 
-        return session.get(SignInController.USER_KEY).map(userJson -> {
-            JsonNode userNode = Json.parse(userJson);
-            User user = Json.fromJson(userNode, User.class);
+        JsonNode userNode = Json.parse(userJson);
+        User user = Json.fromJson(userNode, User.class);
 
 
+        logger.info("Attempting to find movie...");
 
-            logger.info("Attempting to find movie...");
-
+        if(user != null) {
             return movieManager.getMovie(movieID)
                     .thenApply(movie -> {
                         logger.info("Found movie");
 
-                        return  ok(views.html.movie.render(user, movie, session, finalPlayResult, finalRatingResult))
-                                .removingFromSession(request, PLAY_RESULT, RATING_RESULT);
-                    });
+                        //                    return ok(views.html.movie.render(user, movie,
+                        //                            finalPlayResult, finalRatingResult, null, session))
+                        //                            .removingFromSession(request, PLAY_RESULT, RATING_RESULT);
 
-        }).orElseGet(() -> {
+                        return collectionManager.getCollections(user.getUserID()).thenApply(collections ->
+                                ok(views.html.movie.render(user, movie,
+                                        finalPlayResult, finalRatingResult, collections, session))
+                                        .removingFromSession(request, PLAY_RESULT, RATING_RESULT)
+                        );
+                    });
+        }
+        else {
             return movieManager.getMovie(movieID)
                     .thenApply(movie -> {
                         logger.info("Found movie");
-                        return ok(views.html.movie.render(null, movie, session, finalPlayResult, finalRatingResult))
-                                .removingFromSession(request, PLAY_RESULT, RATING_RESULT);
+                        return CompletableFuture.completedFuture(ok(views.html.movie.render(null, movie,
+                                finalPlayResult, finalRatingResult, null, session))
+                                .removingFromSession(request, PLAY_RESULT, RATING_RESULT));
                     });
-        });
+        }
     }
 
     /**
@@ -105,7 +122,6 @@ public class MovieController extends Controller {
 
             return movieManager.playMovie(user.getUserID(), movieID)
                     .thenApply(x -> {
-                        logger.info("Found movie");
                         return  redirect("/movie/" + movieID)
                                 .addingToSession(request, PLAY_RESULT, PLAY_SUCCESSFUL);
                     });
@@ -128,8 +144,6 @@ public class MovieController extends Controller {
 
             return movieManager.rateMovie(rating, user.getUserID(), movieID)
                     .thenApply(x -> {
-                       logger.info("Movie rated");
-
                        return redirect("/movie/" + movieID)
                                .addingToSession(request, RATING_RESULT, RATING_SUCCESSFUL);
                     });
