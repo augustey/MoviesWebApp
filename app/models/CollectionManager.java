@@ -29,6 +29,57 @@ public class CollectionManager {
         this.logger = LoggerFactory.getLogger(this.getClass());
     }
 
+    /**
+     * Remove a movie to a collection
+     * @param collectionID The collection to remove from
+     * @param movieID The movie to remove
+     * @return A completion stage for asynchronous execution handling
+     */
+    public CompletionStage<Void> deleteFromCollection(int collectionID, int movieID) {
+        return CompletableFuture.supplyAsync(() ->
+                dataSource.withConnection(conn -> {
+                    Statement statement = conn.createStatement();
+                    String sql = "DELETE FROM CollectionMovies WHERE CollectionID=%d AND MovieID=%d;";
+                    sql = String.format(sql, collectionID, movieID);
+
+                    logger.info("Deleting movie movieID:"+movieID+"from collectionID:"+collectionID+"...");
+
+                    statement.executeUpdate(sql);
+                    statement.close();
+
+                    return null;
+                })
+        );
+    }
+
+    /**
+     * Add a movie to a collection
+     * @param collectionID The collection to add to
+     * @param movieID The movie to add
+     * @return A completion stage for asynchronous execution handling
+     */
+    public CompletionStage<Void> insertIntoCollection(int collectionID, int movieID) {
+        return CompletableFuture.supplyAsync(() ->
+                dataSource.withConnection(conn -> {
+                    Statement statement = conn.createStatement();
+                    String sql = "INSERT INTO CollectionMovies VALUES(%d, %d);";
+                    sql = String.format(sql, collectionID, movieID);
+
+                    logger.info("Adding movie movieID:"+movieID+"to collectionID:"+collectionID+"...");
+
+                    statement.executeUpdate(sql);
+                    statement.close();
+
+                    return null;
+                })
+        );
+    }
+
+    /**
+     * Get all the movies in a collection
+     * @param collectionID Collection to search for
+     * @return A list of movies in the collection
+     */
     public CompletionStage<List<Movie>> getCollectionMovies(int collectionID) {
         return CompletableFuture.supplyAsync(() ->
                 dataSource.withConnection(conn -> {
