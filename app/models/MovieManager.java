@@ -5,6 +5,8 @@ import org.slf4j.LoggerFactory;
 import util.Message;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.sql.Statement;
@@ -180,7 +182,7 @@ public class MovieManager {
         return CompletableFuture.supplyAsync(() ->
                 dataSource.withConnection(conn -> {
                     Statement statement = conn.createStatement();
-                    // message to be returned
+                    // value to be returned
                     double result;
 
                     String getRatingsQuery = "SELECT COUNT(rating) as count, SUM(rating) as sum" +
@@ -211,6 +213,42 @@ public class MovieManager {
     }
 
     /**
-     * TODO search video
+     * Searches the database for a movie with the search key in the title
+     * @param searchKey the string to search by
+     * @return completion stage containing a list of the movies that were returned
+     *         by the query
      */
+    public CompletionStage<List<Movie>> searchMovie(String searchKey) {
+        return CompletableFuture.supplyAsync(() ->
+                dataSource.withConnection(conn -> {
+                    ArrayList<Movie> resultList = new ArrayList<>();
+
+                    Statement statement = conn.createStatement();
+
+                    String searchQuery = "SELECT * FROM movies WHERE title LIKE '%%%s%%'";
+                    searchQuery = String.format(searchQuery, searchKey);
+
+                    ResultSet results = statement.executeQuery(searchQuery);
+
+                    logger.info("Searched for movies with " + searchKey +
+                            " in their name");
+
+                    while(results.next()) {
+                        int movieID = results.getInt("movieid");
+                        String title = results.getString("title");
+                        int length = results.getInt("length");
+                        Timestamp releaseDate = results.getTimestamp("releasedate");
+                        String mpaa = results.getString("mpaa");
+
+                        resultList.add(new Movie(movieID, title, length, releaseDate, mpaa));
+                    }
+
+                    if(resultList.isEmpty()) {
+                        logger.info("No movies found!");
+                    }
+
+                    return resultList;
+                })
+        );
+    }
 }
