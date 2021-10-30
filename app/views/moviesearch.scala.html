@@ -1,0 +1,29 @@
+@*
+* This template handles the movie search page. It displays all the movies
+* that were searched for, and links them to their individual movie page.
+*@
+
+@import java.util
+@import models.Movie
+@(movieList: util.List<Movie>)(implicit session: play.mvc.Http.Session)
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Movie Search</title>
+        <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
+    </head>
+
+    <body>
+        @header()
+
+        <div class="content">
+
+
+        </div>
+    </body>
+
+
+
+</html>
