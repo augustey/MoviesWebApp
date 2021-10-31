@@ -125,3 +125,7 @@ form input[type=submit] {
 .error {
     color: red;
 }
+
+.info {
+    color: blue;
+}
