@@ -10,7 +10,6 @@ import play.mvc.*;
 import util.Message;
 
 import java.util.Map;
-import java.util.NoSuchElementException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import javax.inject.Inject;
@@ -25,15 +24,14 @@ public class MovieController extends Controller {
     private final Logger logger;
     private final CollectionManager collectionManager;
 
-    private final static String MOVIE_ERROR = "movie_error";
-    private final static String MOVIE_SUCCESS = "movie_success";
-    private final static String PLAY_RESULT = "playResult";
-    private final static String PLAY_SUCCESSFUL = "Successfully played movie!";
-    private final static String PLAY_FAILED = "User not logged in, movie not played.";
+    public final static String MOVIE_ERROR = "movie_error";
+    public final static String MOVIE_SUCCESS = "movie_success";
 
-    private final static String RATING_RESULT = "ratingResult";
-    private final static String RATING_SUCCESSFUL = "Rating was successful!";
-    private final static String RATING_FAILED = "User not logged in, rating failed.";
+    public final static String PLAY_SUCCESSFUL = "Successfully played movie!";
+    public final static String PLAY_FAILED = "User not logged in, movie not played.";
+
+    public final static String RATING_SUCCESSFUL = "Rating was successful!";
+    public final static String RATING_FAILED = "User not logged in, rating failed.";
 
     /**
      * Constructor
@@ -107,7 +105,8 @@ public class MovieController extends Controller {
      */
     public CompletionStage<Result> movieRated(Http.Request request, int movieID) {
         Map<String, String[]> params = request.body().asFormUrlEncoded();
-        int rating = Integer.parseInt(params.get("rating")[0]);
+        String ratingString = params.get("rating")[0];
+        int rating = ratingString.equals("") ? 0 : Integer.parseInt(ratingString);
 
         return request.session().get(SignInController.USER_KEY).map(userJson -> {
             JsonNode userNode = Json.parse(userJson);
