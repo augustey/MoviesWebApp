@@ -3,7 +3,7 @@
 * being able to rate it, and its general information.
 *@
 
-@(user: User)(movie: Movie)(message: util.Message)(collections: List[MovieCollection])(implicit session: play.mvc.Http.Session)
+@(request: Http.Request)(movie: Movie)(message: util.Message)(collections: List[MovieCollection])(implicit session: play.mvc.Http.Session)
 
 <!DOCTYPE html>
 <html lang="en">
@@ -22,7 +22,7 @@
         @header()
 
         <div class="content">
-            @movieview(movie)(message)
+            @movieview(request)(movie)(message)
             <form method="GET" action="/collections/movie/add">
                 <label>Add to Collection</label>
                 <select name="collectionid">
