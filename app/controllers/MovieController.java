@@ -67,11 +67,11 @@ public class MovieController extends Controller {
             return movieManager.getMovie(movieID).thenCombine(collectionManager.getCollections(user.getUserID()), (movie, collections) -> {
                 logger.info("Found movie");
 
-                return ok(views.html.movie.render(user, movie, message, collections, session));
+                return ok(views.html.movie.render(request, movie, message, collections, session));
             });
         }).orElseGet(() ->
                 movieManager.getMovie(movieID).thenApply(movie ->
-                    ok(views.html.movie.render(null, movie, message, null, session))
+                    ok(views.html.movie.render(request, movie, message, null, session))
                 )
         );
     }
@@ -83,17 +83,19 @@ public class MovieController extends Controller {
      */
     public CompletionStage<Result> movieWatched(Http.Request request, int movieID) {
         Http.Session session = request.session();
+        Map<String, String[]> params = request.body().asFormUrlEncoded();
+        String location = params.get("location")[0];
 
         return session.get(SignInController.USER_KEY).map(userJson -> {
             JsonNode userNode = Json.parse(userJson);
             User user = Json.fromJson(userNode, User.class);
 
             return movieManager.playMovie(user.getUserID(), movieID).thenApply(x ->
-                redirect("/movie/" + movieID)
+                redirect(location)
                 .flashing(MOVIE_SUCCESS, PLAY_SUCCESSFUL)
             );
         }).orElseGet(() ->
-                CompletableFuture.completedFuture(redirect(request.uri())
+                CompletableFuture.completedFuture(redirect(location)
                 .flashing(MOVIE_ERROR, PLAY_FAILED))
         );
     }
@@ -106,6 +108,7 @@ public class MovieController extends Controller {
     public CompletionStage<Result> movieRated(Http.Request request, int movieID) {
         Map<String, String[]> params = request.body().asFormUrlEncoded();
         String ratingString = params.get("rating")[0];
+        String location = params.get("location")[0];
         int rating = ratingString.equals("") ? 0 : Integer.parseInt(ratingString);
 
         return request.session().get(SignInController.USER_KEY).map(userJson -> {
@@ -113,11 +116,11 @@ public class MovieController extends Controller {
             User user = Json.fromJson(userNode, User.class);
 
             return movieManager.rateMovie(rating, user.getUserID(), movieID).thenApply(x ->
-                redirect("/movie/" + movieID)
+                redirect(location)
                 .flashing(MOVIE_SUCCESS, RATING_SUCCESSFUL)
             );
         }).orElseGet(() ->
-                CompletableFuture.completedFuture(redirect(request.uri())
+                CompletableFuture.completedFuture(redirect(location)
                 .flashing(MOVIE_ERROR, RATING_FAILED))
         );
     }
