@@ -87,7 +87,7 @@ form select {
     width: 205px;
 }
 
-form input[type=submit] {
+button, form input[type=submit] {
     width: 75px;
     height: 30px;
     border-radius: 10px;
