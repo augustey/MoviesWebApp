@@ -1,0 +1,38 @@
+@(request: Http.Request)(movie: Movie)(message: util.Message)
+
+<div class="movie_element">
+    <table>
+        <tr>
+            <td>@movie.getTitle</td>
+        </tr>
+        <tr>
+            <td><u>Length</u>: @movie.lengthToString()</td>
+        </tr>
+        <tr>
+            <td><u>Release Date:</u> @movie.getReleaseDate</td>
+        </tr>
+        <tr>
+            <td><u>MPAA</u>: @movie.getMpaa</td>
+        </tr>
+        <tr>
+            <td><u>Rating:</u> @movie.getRating</td>
+        </tr>
+    </table>
+    <div class="movie_element_form">
+        <form action="/movie/@movie.getMovieID/rate" method="POST" enctype="application/x-www-form-urlencoded">
+            <input type="number" name="rating" min="1" max="5">
+            <input type="submit" value="Rate Movie"/>
+            <input type="hidden" value="@request.uri" name="location"/>
+        </form>
+        <form action="/movie/@movie.getMovieID/play" method="POST" enctype="application/x-www-form-urlencoded">
+            <input type="submit" value="Play Movie"/>
+            <input type="hidden" value="@movie.getMovieID" name="movieID"/>
+            <input type="hidden" value="@request.uri" name="location"/>
+        </form>
+    </div>
+    @if(message.succeeded()) {
+        <span class="info">@message.getText</span>
+    } else {
+        <span class="error">@message.getText</span>
+    }
+</div>
