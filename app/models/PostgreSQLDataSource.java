@@ -18,6 +18,7 @@ public class PostgreSQLDataSource implements DataSource{
     private final Logger logger;
     private Session session;
     private Connection conn;
+    private static Object lock = new Object();
 
     /**
      * Constructor for PostgreSQLDataSource.
@@ -36,49 +37,49 @@ public class PostgreSQLDataSource implements DataSource{
      * @return any value of type T that the calling class expects.
      */
     @Override
-    public synchronized <T> T withConnection(DataSourceCallable<T> callable) {
-        String username = config.getString("username");
-        String password = config.getString("password");
-        String host = config.getString("host");
-        int lport = config.getInt("lport");
-        int rport = config.getInt("rport");
-        String databaseName = config.getString("database");
-        String driver = config.getString("driver");
-        T result = null;
+    public <T> T withConnection(DataSourceCallable<T> callable) {
+        synchronized (lock) {
+            String username = config.getString("username");
+            String password = config.getString("password");
+            String host = config.getString("host");
+            int lport = config.getInt("lport");
+            int rport = config.getInt("rport");
+            String databaseName = config.getString("database");
+            String driver = config.getString("driver");
+            T result = null;
 
-        try {
-            JSch jsch = new JSch();
-            session = jsch.getSession(username, host, 22);
-            session.setPassword(password);
-            session.setConfig("StrictHostKeyChecking", "no");
-            session.setConfig("PreferredAuthentications", "publickey,keyboard-interactive,password");
-            session.connect();
+            try {
+                JSch jsch = new JSch();
+                session = jsch.getSession(username, host, 22);
+                session.setPassword(password);
+                session.setConfig("StrictHostKeyChecking", "no");
+                session.setConfig("PreferredAuthentications", "publickey,keyboard-interactive,password");
+                session.connect();
 
-            logger.info("Tunnel Connected...");
+                logger.info("Tunnel Connected...");
 
-            int assigned_port = session.setPortForwardingL(lport, "localhost", rport);
+                int assigned_port = session.setPortForwardingL(lport, "localhost", rport);
 
-            logger.info("Port Forwarded...");
+                logger.info("Port Forwarded...");
 
-            String url = "jdbc:postgresql://localhost:" + assigned_port + "/" + databaseName;
+                String url = "jdbc:postgresql://localhost:" + assigned_port + "/" + databaseName;
 
-            Class.forName(driver);
-            conn = DriverManager.getConnection(url, username, password);
+                Class.forName(driver);
+                conn = DriverManager.getConnection(url, username, password);
 
-            logger.info("Database Connected Successfully!");
+                logger.info("Database Connected Successfully!");
 
-            conn.setAutoCommit(false);
-            result = callable.call(conn);
-            conn.commit();
+                conn.setAutoCommit(false);
+                result = callable.call(conn);
+                conn.commit();
+            } catch (Exception e) {
+                logger.error(e.toString());
+            } finally {
+                close();
+            }
+
+            return result;
         }
-        catch(Exception e) {
-            logger.error(e.toString());
-        }
-        finally {
-            close();
-        }
-
-        return result;
     }
 
     /**
