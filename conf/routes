@@ -19,6 +19,10 @@ GET     /collections/delete         controllers.CollectionController.deleteColle
 
 GET     /collections/modify         controllers.CollectionController.modifyName(collectionid: Int, name)
 
+GET     /collections/movie/add      controllers.CollectionMoviesController.add(request: Request, collectionid: Int, movieid: Int)
+
+GET     /collections/movie/remove   controllers.CollectionMoviesController.remove(collectionid: Int, movieid: Int)
+
 GET     /users                      controllers.UsersController.users(request: Request, q ?= "")
 
 GET     /users/follow               controllers.FollowController.follow(request: Request, followedid: Int)
