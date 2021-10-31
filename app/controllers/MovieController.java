@@ -1,13 +1,13 @@
 package controllers;
 import com.fasterxml.jackson.databind.JsonNode;
 import models.CollectionManager;
-import models.Movie;
 import models.MovieManager;
 import models.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import play.libs.Json;
 import play.mvc.*;
+import util.Message;
 
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -25,6 +25,8 @@ public class MovieController extends Controller {
     private final Logger logger;
     private final CollectionManager collectionManager;
 
+    private final static String MOVIE_ERROR = "movie_error";
+    private final static String MOVIE_SUCCESS = "movie_success";
     private final static String PLAY_RESULT = "playResult";
     private final static String PLAY_SUCCESSFUL = "Successfully played movie!";
     private final static String PLAY_FAILED = "User not logged in, movie not played.";
@@ -54,58 +56,26 @@ public class MovieController extends Controller {
         Http.Session session = request.session();
 
         // results from play or rate calls
-        String playResult;
-        String ratingResult;
-        String userJson;
-
-        try{
-            playResult = session.get(PLAY_RESULT).get();
-            ratingResult = session.get(RATING_RESULT).get();
-            userJson =  session.get(SignInController.USER_KEY).get();
-
-        }
-        catch(NoSuchElementException e){
-            logger.info("NO SUCH ELEMENT");
-
-            playResult = null;
-            ratingResult = null;
-            userJson = null;
-        }
-
-        final String finalPlayResult = playResult;
-        final String finalRatingResult = ratingResult;
-
-        JsonNode userNode = Json.parse(userJson);
-        User user = Json.fromJson(userNode, User.class);
-
+        String error = request.flash().get(MOVIE_ERROR).orElse("");
+        String success = request.flash().get(MOVIE_SUCCESS).orElse("");
+        final Message message = error.equals("") ? Message.info(success) : Message.error(error);
 
         logger.info("Attempting to find movie...");
 
-        if(user != null) {
-            return movieManager.getMovie(movieID)
-                    .thenApply(movie -> {
-                        logger.info("Found movie");
+        return session.get(SignInController.USER_KEY).map(userJson -> {
+            JsonNode userNode = Json.parse(userJson);
+            User user = Json.fromJson(userNode, User.class);
 
-                        //                    return ok(views.html.movie.render(user, movie,
-                        //                            finalPlayResult, finalRatingResult, null, session))
-                        //                            .removingFromSession(request, PLAY_RESULT, RATING_RESULT);
+            return movieManager.getMovie(movieID).thenCombine(collectionManager.getCollections(user.getUserID()), (movie, collections) -> {
+                logger.info("Found movie");
 
-                        return collectionManager.getCollections(user.getUserID()).thenApply(collections ->
-                                ok(views.html.movie.render(user, movie,
-                                        finalPlayResult, finalRatingResult, collections, session))
-                                        .removingFromSession(request, PLAY_RESULT, RATING_RESULT)
-                        );
-                    });
-        }
-        else {
-            return movieManager.getMovie(movieID)
-                    .thenApply(movie -> {
-                        logger.info("Found movie");
-                        return CompletableFuture.completedFuture(ok(views.html.movie.render(null, movie,
-                                finalPlayResult, finalRatingResult, null, session))
-                                .removingFromSession(request, PLAY_RESULT, RATING_RESULT));
-                    });
-        }
+                return ok(views.html.movie.render(user, movie, message, collections, session));
+            });
+        }).orElseGet(() ->
+                movieManager.getMovie(movieID).thenApply(movie ->
+                    ok(views.html.movie.render(null, movie, message, null, session))
+                )
+        );
     }
 
     /**
@@ -120,13 +90,14 @@ public class MovieController extends Controller {
             JsonNode userNode = Json.parse(userJson);
             User user = Json.fromJson(userNode, User.class);
 
-            return movieManager.playMovie(user.getUserID(), movieID)
-                    .thenApply(x -> {
-                        return  redirect("/movie/" + movieID)
-                                .addingToSession(request, PLAY_RESULT, PLAY_SUCCESSFUL);
-                    });
-        }).orElseGet(() -> CompletableFuture.completedFuture(redirect("/movie/" + movieID)
-                .addingToSession(request, PLAY_RESULT, PLAY_FAILED)));
+            return movieManager.playMovie(user.getUserID(), movieID).thenApply(x ->
+                redirect("/movie/" + movieID)
+                .flashing(MOVIE_SUCCESS, PLAY_SUCCESSFUL)
+            );
+        }).orElseGet(() ->
+                CompletableFuture.completedFuture(redirect(request.uri())
+                .flashing(MOVIE_ERROR, PLAY_FAILED))
+        );
     }
 
     /**
@@ -142,12 +113,13 @@ public class MovieController extends Controller {
             JsonNode userNode = Json.parse(userJson);
             User user = Json.fromJson(userNode, User.class);
 
-            return movieManager.rateMovie(rating, user.getUserID(), movieID)
-                    .thenApply(x -> {
-                       return redirect("/movie/" + movieID)
-                               .addingToSession(request, RATING_RESULT, RATING_SUCCESSFUL);
-                    });
-        }).orElseGet(() -> CompletableFuture.completedFuture(redirect("/movie/" + movieID)
-                .addingToSession(request, RATING_RESULT, RATING_FAILED)));
+            return movieManager.rateMovie(rating, user.getUserID(), movieID).thenApply(x ->
+                redirect("/movie/" + movieID)
+                .flashing(MOVIE_SUCCESS, RATING_SUCCESSFUL)
+            );
+        }).orElseGet(() ->
+                CompletableFuture.completedFuture(redirect(request.uri())
+                .flashing(MOVIE_ERROR, RATING_FAILED))
+        );
     }
 }
