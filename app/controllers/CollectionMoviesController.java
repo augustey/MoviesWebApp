@@ -11,6 +11,7 @@ import javax.inject.Inject;
 import java.util.concurrent.CompletionStage;
 
 import static play.mvc.Results.ok;
+import static play.mvc.Results.redirect;
 
 /**
  * This controller handles routes and actions related to a specific user collection
@@ -19,6 +20,7 @@ import static play.mvc.Results.ok;
 public class CollectionMoviesController {
     private final CollectionManager collectionManager;
     private final Logger logger;
+    private final String SUCCESSFUL_ADD = "Movie successfully added to collection!";
 
     /**
      * Constructor for CollectionMoviesController
@@ -28,6 +30,32 @@ public class CollectionMoviesController {
     public CollectionMoviesController(CollectionManager collectionManager) {
         this.collectionManager = collectionManager;
         this.logger = LoggerFactory.getLogger(this.getClass());
+    }
+
+    /**
+     * Add a movie to a collection
+     * @param request The request from the client
+     * @param collectionID The collection to insert into
+     * @param movieID The movie to add
+     * @return A redirect to last page
+     */
+    public CompletionStage<Result> add(Http.Request request, int collectionID, int movieID) {
+        return collectionManager.insertIntoCollection(collectionID, movieID).thenApply(
+                result -> redirect("/movie/"+movieID).flashing(MovieController.MOVIE_SUCCESS, SUCCESSFUL_ADD)
+        );
+    }
+
+    /**
+     * REmove a movie to a collection
+     * @param request The request from the client
+     * @param collectionID The collection to insert into
+     * @param movieID The movie to add
+     * @return A redirect to last page
+     */
+    public CompletionStage<Result> remove(int collectionID, int movieID) {
+        return collectionManager.deleteFromCollection(collectionID, movieID).thenApply(
+                result -> redirect("/collections/"+collectionID)
+        );
     }
 
     /**
