@@ -95,6 +95,10 @@ form input[type=submit] {
     background-color: #79B4B7;
 }
 
+form input[type=number] {
+    width: 50px;
+}
+
 .sql-table {
     width: 75%;
 }
@@ -120,6 +124,33 @@ form input[type=submit] {
 
 .sql-table table tr:nth-child(odd) {
     background-color: #FEFBF3;
+}
+
+.movie_element {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #F8F0DF;
+    color: #222222;
+    padding: 20px;
+    border: 1px solid #79B4B7;
+    border-radius: 10px;
+}
+
+.movie_element td {
+    font-size: 18px;
+    text-align: left;
+}
+
+.movie_element table tr:first-child {
+    font-size: 20px;
+    text-align: center;
+    color: #43707d;
+}
+
+.movie_element_form {
+    display: flex;
 }
 
 .error {
