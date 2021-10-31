@@ -31,6 +31,8 @@ GET     /users/unfollow             controllers.FollowController.unfollow(reques
 
 GET     /collections/:collectionid  controllers.CollectionMoviesController.collectionMovies(request: Request, collectionid: Int)
 
+GET     /collections/:cid/play/:pg  controllers.PlayCollectionController.playCollection(request: Request, cid: Int, pg: Int)
+
 GET     /search                     controllers.MovieSearchController.search(request: Request, q?="N/A", c: Int?=0, s: Int?=0, a: Boolean?=true)
 
 POST    /signin                     controllers.SignInController.verify(request: Request)
@@ -39,7 +41,7 @@ POST    /register                   controllers.RegisterController.createUser(re
 
 GET     /movie/:movieID             controllers.MovieController.loadMovie(request: Request, movieID: Int)
 
-GET     /movie/:movieID/play        controllers.MovieController.movieWatched(request: Request, movieID: Int)
+POST    /movie/:movieID/play        controllers.MovieController.movieWatched(request: Request, movieID: Int)
 
 POST    /movie/:movieID/rate        controllers.MovieController.movieRated(request: Request, movieID: Int)
 
