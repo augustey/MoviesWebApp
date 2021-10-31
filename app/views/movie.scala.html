@@ -3,7 +3,7 @@
 * being able to rate it, and its general information.
 *@
 
-@(user: User, movie: Movie, playMsg: String, ratingMsg: String, collections: List[MovieCollection])(implicit session: play.mvc.Http.Session)
+@(user: User)(movie: Movie)(message: util.Message)(collections: List[MovieCollection])(implicit session: play.mvc.Http.Session)
 
 <!DOCTYPE html>
 <html lang="en">
@@ -22,53 +22,59 @@
         @header()
 
         <div class="content">
-            @if(movie != null) {
 
-                <h1>
-                    <u>Title:</u> @movie.getTitle
-                </h1>
-                <p>
+@*            @if(movie != null) {*@
 
-                    <u>Length:</u> @movie.lengthToString
-                </p>
-                <p>
-                    <u>Release Date:</u> @movie.getReleaseDate
-                </p>
-                <p>
-                    <u>MPAA Rating:</u> @movie.getMpaa
-                </p>
-                <p>
-                    <u>User Rating:</u> @movie.getRating
-                </p>
-                <form action="/movie/@movie.getMovieID/play" method="GET">
-                    <input type="submit" value="Play Movie"/>
-                    <input type="hidden" value="@movie.getMovieID" name="movieID"/>
-                </form>
-                @if(playMsg != null) {
-                    <p>@playMsg</p>
-                }
+@*                <h1>*@
+@*                    <u>Title:</u> @movie.getTitle*@
+@*                </h1>*@
+@*                <p>*@
 
-                <form action="/movie/@movie.getMovieID/rate" method="POST" enctype="application/x-www-form-urlencoded">
-                    <label>Rate movie:</label>
-                    <select name="rating">
-                        <option>1</option>
-                        <option>2</option>
-                        <option>3</option>
-                        <option>4</option>
-                        <option>5</option>
-                    </select>
-                    <input type="submit" value="Submit"/>
-                </form>
-                @if(ratingMsg != null) {
-                    <p>@ratingMsg</p>
-                }
+@*                    <u>Length:</u> @movie.lengthToString*@
+@*                </p>*@
+@*                <p>*@
+@*                    <u>Release Date:</u> @movie.getReleaseDate*@
+@*                </p>*@
+@*                <p>*@
+@*                    <u>MPAA Rating:</u> @movie.getMpaa*@
+@*                </p>*@
+@*                <p>*@
+@*                    <u>User Rating:</u> @movie.getRating*@
+@*                </p>*@
+@*                <form action="/movie/@movie.getMovieID/play" method="GET">*@
+@*                    <input type="submit" value="Play Movie"/>*@
+@*                    <input type="hidden" value="@movie.getMovieID" name="movieID"/>*@
+@*                </form>*@
 
-                <h2>Add to collections:</h2>
-
-
-
-            } else {
-                <h1>Movie not found!</h1>
-            }
+@*                <form action="/movie/@movie.getMovieID/rate" method="POST" enctype="application/x-www-form-urlencoded">*@
+@*                    <label>Rate movie:</label>*@
+@*                    <select name="rating">*@
+@*                        <option>1</option>*@
+@*                        <option>2</option>*@
+@*                        <option>3</option>*@
+@*                        <option>4</option>*@
+@*                        <option>5</option>*@
+@*                    </select>*@
+@*                    <input type="submit" value="Submit"/>*@
+@*                </form>*@
+@*                <h2>Add to collections:</h2>*@
+@*                <form method="GET" action="/collections/delete">*@
+@*                    <select name="collectionid">*@
+@*                        <option value=-1>----</option>*@
+@*                        @for(col <- collections) {*@
+@*                            <option value=@col.getCollectionID>@col.getName</option>*@
+@*                        }*@
+@*                    </select>*@
+@*                    <input type="submit" value="Delete"/>*@
+@*                </form>*@
+@*                @if(ratingMsg != null) {*@
+@*                    <p>@ratingMsg</p>*@
+@*                }*@
+@*                @if(playMsg != null) {*@
+@*                    <p>@playMsg</p>*@
+@*                }*@
+@*            } else {*@
+@*                <h1>Movie not found!</h1>*@
+@*            }*@
         </div>
     </body>
