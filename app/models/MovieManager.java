@@ -22,7 +22,6 @@ import javax.inject.Inject;
 public class MovieManager {
     private final DataSource dataSource;
     private final Logger logger;
-    private final Message VIDEO_DNE = Message.error("Video does not exist");
     private final String[] categories = {"Title, ReleaseDate", "Title", "ReleaseDate", "S.Name", "C.Name", "D.name", "Genre"};
 
     /**
@@ -47,12 +46,10 @@ public class MovieManager {
                     Statement statement = conn.createStatement();
 
                     String sql = "SELECT M.MovieID AS MovieID, Title, Length, MPAA, ReleaseDate, ROUND(AVG(Rating),1) AS Rating " +
-                            "FROM Movies AS M JOIN Watches AS W ON M.MovieID=W.MovieID " +
-                            "WHERE M.MovieID = %d " +
-                            "GROUP BY M.MovieID;";
+                                 "FROM Movies AS M JOIN Watches AS W ON M.MovieID=W.MovieID " +
+                                 "WHERE M.MovieID = %d " +
+                                 "GROUP BY M.MovieID;";
                     sql = String.format(sql, movieID);
-
-                    logger.info("QUERY: " + sql);
 
                     logger.info("Attempting to fetch movie " + movieID + "...");
                     ResultSet results = statement.executeQuery(sql);
