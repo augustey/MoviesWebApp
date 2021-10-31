@@ -1,0 +1,31 @@
+@*
+* This template handles an individual movie's page, including its play button,
+* being able to rate it, and its general information.
+*@
+
+@(request: Http.Request)(collectionID: Int)(page: Int)(inRange: Boolean)(movie: Movie)(message: util.Message)(implicit session: play.mvc.Http.Session)
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Movies</title>
+        <link rel="stylesheet" media="screen" href="@routes.Assets.versioned("stylesheets/main.css")">
+        <link rel="shortcut icon" type="image/png" href="@routes.Assets.versioned("images/favicon.png")">
+    </head>
+
+    <body>
+        @header()
+
+        <div class="content">
+            @if(inRange) {
+                @movieview(request)(movie)(message)
+            } else {
+                <a href=@{"/collections/"+collectionID}>Return to collection</a>
+            }
+
+            <div class="movie_element_form">
+                <button style="margin: 10px" onclick="@{"location.href = '/collections/"+collectionID+"/play/"+(page-1)+"'"}">Previous</button>
+                <button style="margin: 10px" onclick="@{"location.href = '/collections/"+collectionID+"/play/"+(page+1)+"'"}">Next</button>
+            </div>
+        </div>
+    </body>
