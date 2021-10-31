@@ -16,6 +16,16 @@
                     <input type="hidden" name="collectionid" value="@collectionID"/>
                     <input type="submit" value="Update"/>
                 </form>
+                <form method="GET" action="/collections/movie/remove">
+                    <select name="movieid">
+                        <option value=-1>----</option>
+                        @for(mov <- movies) {
+                            <option value=@mov.getMovieID>@mov.getTitle</option>
+                        }
+                    </select>
+                    <input type="hidden" value="@collectionID" name="collectionid"/>
+                    <input type="submit" value="Delete"/>
+                </form>
             </div>
             <div class="sql-table">
                 <table>
@@ -27,7 +37,7 @@
                     </tr>
                     @for(mov <- movies) {
                         <tr>
-                            <td>@mov.getTitle</td>
+                            <td><a href="/movie/@mov.getMovieID">@mov.getTitle</a></td>
                             <td>@mov.lengthToString</td>
                             <td>@mov.getReleaseDate</td>
                             <td>@mov.getMpaa</td>
