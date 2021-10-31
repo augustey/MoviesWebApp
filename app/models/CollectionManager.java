@@ -84,7 +84,11 @@ public class CollectionManager {
         return CompletableFuture.supplyAsync(() ->
                 dataSource.withConnection(conn -> {
                     Statement statement = conn.createStatement();
-                    String sql = "SELECT * FROM Movies AS M, CollectionMovies AS C WHERE M.MovieID=C.MovieID AND C.CollectionID=%d;";
+                    String sql = "SELECT M.MovieID, Title, Length, MPAA, ReleaseDate, ROUND(AVG(Rating),1) AS Rating "+
+                                 "FROM Movies AS M JOIN CollectionMovies AS C ON M.MovieID=C.MovieID "+
+                                 "JOIN Watches AS W ON M.MovieID=W.MovieID "+
+                                 "WHERE C.CollectionID=%d "+
+                                 "GROUP BY M.MovieID;";
                     sql = String.format(sql, collectionID);
                     List<Movie> movies = new ArrayList<>();
                     ResultSet results = statement.executeQuery(sql);
@@ -96,9 +100,10 @@ public class CollectionManager {
                         String title = results.getString("Title");
                         int length = results.getInt("Length");
                         String mpaa = results.getString("MPAA");
+                        double rating = results.getDouble("Rating");
                         Date releaseDate = results.getDate("ReleaseDate");
 
-                        Movie movie = new Movie(movieID, title, length, releaseDate, mpaa);
+                        Movie movie = new Movie(movieID, title, length, releaseDate, mpaa, rating, null, null);
 
                         movies.add(movie);
                     }
