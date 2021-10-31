@@ -62,7 +62,7 @@ public class CollectionManager {
         return CompletableFuture.supplyAsync(() ->
                 dataSource.withConnection(conn -> {
                     Statement statement = conn.createStatement();
-                    String sql = "INSERT INTO CollectionMovies VALUES(%d, %d);";
+                    String sql = "INSERT INTO CollectionMovies VALUES(%d, %d) ON CONFLICT DO NOTHING;";
                     sql = String.format(sql, collectionID, movieID);
 
                     logger.info("Adding movie movieID:"+movieID+"to collectionID:"+collectionID+"...");
