@@ -23,16 +23,18 @@
 
         <div class="content">
             @movieview(request)(movie)(message)
-            <form method="GET" action="/collections/movie/add">
-                <label>Add to Collection</label>
-                <select name="collectionid">
-                    <option value=-1>----</option>
-                    @for(col <- collections) {
-                        <option value=@col.getCollectionID>@col.getName</option>
-                    }
-                </select>
-                <input type="hidden" value="@movie.getMovieID" name="movieid"/>
-                <input type="submit" value="Add"/>
-            </form>
+            @if(collections != null) {
+                <form method="GET" action="/collections/movie/add">
+                    <label>Add to Collection</label>
+                    <select name="collectionid">
+                        <option value=-1>----</option>
+                        @for(col <- collections) {
+                            <option value=@col.getCollectionID>@col.getName</option>
+                        }
+                    </select>
+                    <input type="hidden" value="@movie.getMovieID" name="movieid"/>
+                    <input type="submit" value="Add"/>
+                </form>
+            }
         </div>
     </body>
