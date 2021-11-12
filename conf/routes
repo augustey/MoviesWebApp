@@ -47,5 +47,7 @@ POST    /movie/:movieID/rate        controllers.MovieController.movieRated(reque
 
 GET     /recommendations            controllers.RecsController.loadRecs(request: Request)
 
+GET     /profile                    controllers.ProfileController.loadProfile(request: Request)
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
