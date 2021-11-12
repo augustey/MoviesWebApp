@@ -246,4 +246,40 @@ public class AccountManager {
                 })
         );
     }
+
+    public CompletionStage<Integer> getFollowers(int userID) {
+        return CompletableFuture.supplyAsync(() ->
+            dataSource.withConnection(conn -> {
+                Statement statement = conn.createStatement();
+                String sql = "SELECT COUNT(*)  FROM follows WHERE followeduserid = %d;";
+                sql = String.format(sql, userID);
+                ResultSet results = statement.executeQuery(sql);
+
+                if (results.next()) {
+                    int count = results.getInt("count");
+                    return count;
+                } else {
+                    return 0;
+                }
+            })
+        );
+    }
+
+    public CompletionStage<Integer> getFollowing(int userID) {
+        return CompletableFuture.supplyAsync(() ->
+                dataSource.withConnection(conn -> {
+                    Statement statement = conn.createStatement();
+                    String sql = "SELECT COUNT(*)  FROM follows WHERE followeruserid = %d;";
+                    sql = String.format(sql, userID);
+                    ResultSet results = statement.executeQuery(sql);
+
+                    if (results.next()) {
+                        int count = results.getInt("count");
+                        return count;
+                    } else {
+                        return 0;
+                    }
+                })
+        );
+    }
 }
