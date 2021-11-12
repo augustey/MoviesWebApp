@@ -12,6 +12,8 @@ import play.mvc.Http;
 import play.mvc.Result;
 
 import javax.inject.Inject;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 
 public class ProfileController extends Controller{
     private final AccountManager accountManager;
@@ -23,7 +25,7 @@ public class ProfileController extends Controller{
         this.logger = LoggerFactory.getLogger(this.getClass());
     }
 
-    public Result loadProfile(Http.Request request) {
+    public CompletionStage<Result> loadProfile(Http.Request request) {
         Http.Session session = request.session();
         return session.get(SignInController.USER_KEY).map(userJson -> {
             JsonNode userNode = Json.parse(userJson);
@@ -31,6 +33,6 @@ public class ProfileController extends Controller{
 
             return accountManager.getFollowers(user.getUserID()).thenApply(count -> ok(views.html.profile.render(user,
                     count, session)));
-        }).orElseGet(() -> ok(views.html.profile.render(null, null, session)));
+        }).orElseGet(() -> CompletableFuture.completedFuture(ok(views.html.profile.render(null, null, session))));
     }
 }

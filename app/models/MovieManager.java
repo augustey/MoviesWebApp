@@ -6,6 +6,7 @@ import util.Message;
 
 import java.util.Date;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.sql.Statement;
@@ -182,6 +183,11 @@ public class MovieManager {
     }
 
 
+    /**
+     * Get rating of a movie
+     * @param movieID the movie to get the rating of
+     * @return Completion stage containing the rating
+     */
     public CompletionStage<Double> getRating(int movieID) {
         return CompletableFuture.supplyAsync(() ->
                 dataSource.withConnection(conn -> {
@@ -295,8 +301,21 @@ public class MovieManager {
                     return movies;
                 })
         );
-
-
-
     }
+
+//    public CompletionStage<List<Movie>> getTop5LastMonth() {
+//        return CompletableFuture.supplyAsync(() ->
+//                dataSource.withConnection(conn -> {
+//                    Statement statement = conn.createStatement();
+//
+//                    String getTop5Query = """
+//                            SELECT *\s
+//                            FROM movies\s
+//                            WHERE releasedate >= CURRENT_DATE - INTERVAL ‘1 month’;
+//                            """;
+//
+//                    return ne
+//                })
+//        );
+//    }
 }
