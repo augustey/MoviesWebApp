@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.Message;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -102,8 +103,8 @@ public class MovieManager {
 
                 if (checkExistsResult.next()) {
                     logger.info("Movie found, incrementing times played");
-                    String incrementQuery = "UPDATE watches SET timesplayed = timesplayed + 1 " +
-                            "WHERE userid=%d AND movieid=%d";
+                    String incrementQuery = "UPDATE watches SET timesplayed = timesplayed + 1, lastwatched=CURRENT_TIMESTAMP " +
+                                            "WHERE userid=%d AND movieid=%d";
                     incrementQuery = String.format(incrementQuery, userID, movieID);
 
                     // increment watched
@@ -297,6 +298,77 @@ public class MovieManager {
                     personStatement.close();
                     movieResults.close();
                     movieStatement.close();
+
+                    return movies;
+                })
+        );
+    }
+
+    /**
+     * Get the 20 most popular movies in the last 90 days
+     * @return List of most popular movies
+     */
+    public CompletionStage<List<Movie>> get90DayRolling() {
+        return CompletableFuture.supplyAsync(() ->
+                dataSource.withConnection(conn -> {
+                    String sql = "SELECT Movies.MovieID, Title, ReleaseDate, Length, MPAA "+
+                                 "FROM Movies JOIN Watches ON Movies.MovieID = Watches.MovieID "+
+                                 "WHERE LastWatched >= CURRENT_TIMESTAMP - '90d'::INTERVAL "+
+                                 "GROUP BY Movies.MovieID "+
+                                 "ORDER BY (COALESCE(AVG(Rating), 0)*COUNT(UserID), SUM(TimesPlayed)) DESC "+
+                                 "LIMIT 20;";
+                    List<Movie> movies = new ArrayList<>();
+                    Statement statement = conn.createStatement();
+                    ResultSet results = statement.executeQuery(sql);
+
+                    while(results.next()) {
+                        int movieID = results.getInt("MovieID");
+                        String title = results.getString("Title");
+                        Date releaseDate = results.getDate("ReleaseDate");
+                        int length = results.getInt("Length");
+                        String mpaa = results.getString("MPAA");
+                        Movie movie = new Movie(movieID, title, length, releaseDate, mpaa);
+                        movies.add(movie);
+                    }
+
+                    results.close();
+                    statement.close();
+
+                    return movies;
+                })
+        );
+    }
+
+    /**
+     * Get the 20 most popular movies in the last 90 days
+     * @return List of most popular movies
+     */
+    public CompletionStage<List<Movie>> getFriendTopMovies() {
+        return CompletableFuture.supplyAsync(() ->
+                dataSource.withConnection(conn -> {
+                    String sql = "SELECT Movies.MovieID, Title, ReleaseDate, Length, MPAA "+
+                                 "FROM Movies JOIN Watches ON Movies.MovieID = Watches.MovieID "+
+                                 "JOIN Follows ON Watches.UserID = FollowedUserID "+
+                                 "WHERE FollowerUserID=3 "+
+                                 "GROUP BY Movies.movieid "+
+                                 "ORDER BY (COALESCE(AVG(Rating), 0), SUM(TimesPlayed)) DESC "+
+                                 "LIMIT 20;";
+                    List<Movie> movies = new ArrayList<>();
+                    Statement statement = conn.createStatement();
+                    ResultSet results = statement.executeQuery(sql);
+
+                    while(results.next()) {
+                        int movieID = results.getInt("MovieID");
+                        String title = results.getString("Title");
+                        Date releaseDate = results.getDate("ReleaseDate");
+                        int length = results.getInt("Length");
+                        String mpaa = results.getString("MPAA");
+                        Movie movie = new Movie(movieID, title, length, releaseDate, mpaa);
+                        movies.add(movie);
+                    }
+
+                    results.close();
+                    statement.close();
 
                     return movies;
                 })
