@@ -20,6 +20,12 @@
             <p>Welcome @user.getFirstName</p>
             <p><u>Last Access:</u> @user.getLastAccess</p>
             <p><u>Account Created:</u> @user.getCreationDate</p>
+            <br/>
+            <span class="table-heading">Recommendations</span>
+            <ul>
+                <li><a href="recommendations/rolling">Most Popular Movies 90 Day Rolling</a></li>
+                <li><a href="recommendations/friends">Movies That Your Friends Liked</a></li>
+            </ul>
         } else {
             <p>You are not signed in.</p>
         }
