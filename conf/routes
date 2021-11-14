@@ -51,6 +51,10 @@ GET     /recommendations/rolling               controllers.RecommendationsContro
 
 GET     /recommendations/friends               controllers.RecommendationsController.friendTopMovies(request: Request)
 
+GET     /recommendations/monthly                controllers.RecommendationsController.top5LastMonth(request: Request)
+
+GET     /recommendations/foryou                 controllers.RecommendationsController.forYou(request: Request)
+
 GET     /profile                               controllers.ProfileController.loadProfile(request: Request)
 
 # Map static resources from the /public folder to the /assets URL path

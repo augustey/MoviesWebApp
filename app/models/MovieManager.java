@@ -375,6 +375,10 @@ public class MovieManager {
         );
     }
 
+    /**
+     * Gets the top 5 most popular movies released in the last month
+     * @return The top 5 list
+     */
     public CompletionStage<List<Movie>> getTop5LastMonth() {
         return CompletableFuture.supplyAsync(() ->
                 dataSource.withConnection(conn -> {
@@ -385,11 +389,11 @@ public class MovieManager {
                     logger.info("Getting top 5 movies in the last month");
                     String getTop5Query = """
                             SELECT movies.movieid, movies.title, movies.length, movies.releasedate, movies.mpaa,
-                             AVG(watches.rating) as rating
+                            AVG(watches.rating) as rating
                             FROM movies
                             JOIN watches ON movies.movieid = watches.movieid
                             WHERE movies.releasedate >= CURRENT_DATE - INTERVAL '1 month'
-                            GROUP BY movies.title
+                            GROUP BY movies.movieid
                             ORDER BY rating DESC
                             LIMIT 5;
                             """;
@@ -408,11 +412,105 @@ public class MovieManager {
                         top5.add(movie);
                     }
 
-                    if(top5 == null) {
-                        logger.info("TOP 5 LIST WAS NULL");
+                    return top5;
+                })
+        );
+    }
+
+    /**
+     * Gets 10 movie recommendations based on watch history and the history of similar users
+     *
+     * @param userID the user to get recommendations for
+     * @return the recommended movies list
+     */
+    public CompletionStage<List<Movie>> getForYou(int userID) {
+        return CompletableFuture.supplyAsync(() ->
+                dataSource.withConnection(conn -> {
+                    Statement statement = conn.createStatement();
+
+                    List<Movie> forYou = new ArrayList<>();
+
+                    logger.info("Getting top genre");
+                    String getGenresQuery = """
+                            SELECT genre.genre, COUNT(*) as count
+                            FROM genre
+                            JOIN movies ON genre.movieid = movies.movieid
+                            JOIN watches ON genre.movieid = watches.movieid
+                            WHERE watches.userid = %d
+                            GROUP BY genre.genre
+                            ORDER BY count DESC;
+                            """;
+                    getGenresQuery = String.format(getGenresQuery, userID);
+                    ResultSet genreResult = statement.executeQuery(getGenresQuery);
+
+                    String firstGenre = null;
+                    String secondGenre = null;
+
+                    // Get the results
+                    if(genreResult.next()) {
+                        firstGenre = firstGenre = genreResult.getString("genre");
+                        logger.info("First genre: " + firstGenre);
+                    }
+                    if(genreResult.next()) {
+                        secondGenre = genreResult.getString("genre");
+                        logger.info("Second genre: " + secondGenre);
                     }
 
-                    return top5;
+                    String topGenreQuery = """
+                            SELECT movies.movieid, movies.title, movies.length, movies.releasedate,
+                            movies.mpaa, AVG(watches.rating) as rating
+                            FROM movies
+                            JOIN genre ON movies.movieid = genre.movieid
+                            JOIN watches ON movies.movieid = watches.movieid
+                            WHERE genre = '%s'
+                            GROUP BY movies.movieid
+                            ORDER BY rating DESC;
+                            """;
+
+                    /*
+                    Get top 2 genres and select movies based on that
+                     */
+                    if(firstGenre != null) {
+                        String firstGenreQuery = String.format(topGenreQuery, firstGenre);
+                        ResultSet firstGenreResult = statement.executeQuery(firstGenreQuery);
+
+                        // Add 3 movies from the top genre
+                        for(int i = 0; i < 3; i++) {
+                            if(firstGenreResult.next()) {
+                                int movieID = firstGenreResult.getInt("movieID");
+                                String title = firstGenreResult.getString("Title");
+                                int length = firstGenreResult.getInt("Length");
+                                Date releaseDate = firstGenreResult.getDate("ReleaseDate");
+                                String mpaa = firstGenreResult.getString("MPAA");
+
+                                Movie movie = new Movie(movieID, title, length, releaseDate, mpaa);
+
+                                forYou.add(movie);
+                            }
+                        }
+                    }
+                    if(secondGenre != null) {
+                        String secondGenreQuery = String.format(topGenreQuery, secondGenre);
+                        ResultSet secondGenreResult = statement.executeQuery(secondGenreQuery);
+
+                        // Add 2 movies from the 2nd genre
+                        for(int i = 0; i < 2; i++) {
+                            if (secondGenreResult.next()) {
+                                int movieID = secondGenreResult.getInt("movieID");
+                                String title = secondGenreResult.getString("Title");
+                                int length = secondGenreResult.getInt("Length");
+                                Date releaseDate = secondGenreResult.getDate("ReleaseDate");
+                                String mpaa = secondGenreResult.getString("MPAA");
+
+                                Movie movie = new Movie(movieID, title, length, releaseDate, mpaa);
+
+                                forYou.add(movie);
+                            }
+                        }
+                    }
+
+
+                    return forYou;
                 })
         );
     }
