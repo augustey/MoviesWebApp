@@ -1,4 +1,4 @@
-@(user : User)(followers : Integer)(following : Integer)(implicit session: play.mvc.Http.Session)
+@(user : User)(followers : Integer)(following : Integer)(collections : Integer)(implicit session: play.mvc.Http.Session)
 
 <!DOCTYPE html>
 
@@ -15,6 +15,7 @@
         <div class="content">
             @if(user != null) {
                 <p>@user.getUsername()</p>
+                <p>Collections: @collections</p>
                 <p>Followers: @followers</p>
                 <p>Following: @following</p>
             } else {

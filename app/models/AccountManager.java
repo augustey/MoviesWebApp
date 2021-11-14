@@ -282,4 +282,22 @@ public class AccountManager {
                 })
         );
     }
+
+    public CompletionStage<Integer> getCollections(int userID) {
+        return CompletableFuture.supplyAsync(() ->
+                dataSource.withConnection(conn -> {
+                    Statement statement = conn.createStatement();
+                    String sql = "SELECT COUNT(*) FROM collections WHERE userid = %d";
+                    sql = String.format(sql, userID);
+                    ResultSet results = statement.executeQuery(sql);
+
+                    if (results.next()) {
+                        int collectionCount = results.getInt("collectionCount");
+                        return collectionCount;
+                    } else {
+                        return 0;
+                    }
+                })
+        );
+    }
 }
