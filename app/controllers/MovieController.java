@@ -17,6 +17,7 @@ import javax.inject.Inject;
 /**
  * This controller handles HTTP requests for videos
  *
+ * @author Yaqim Auguste (yaa6681@rit.edu)
  * @author Alex Lee     al3774@rit.edu
  */
 public class MovieController extends Controller {

@@ -3,51 +3,59 @@
 # ~~~~
 
 # An example controller showing a sample home page
-GET     /                           controllers.HomeController.index(request: Request)
+GET     /                                      controllers.HomeController.index(request: Request)
 
-GET     /signin                     controllers.SignInController.signIn(request: Request, error: Boolean ?= false)
+GET     /signin                                controllers.SignInController.signIn(request: Request, error: Boolean ?= false)
 
-GET     /logout                     controllers.LogoutController.logout(request: Request)
+GET     /logout                                controllers.LogoutController.logout(request: Request)
 
-GET     /register                   controllers.RegisterController.register(request: Request)
+GET     /register                              controllers.RegisterController.register(request: Request)
 
-GET     /collections                controllers.CollectionController.collections(request: Request)
+GET     /collections                           controllers.CollectionController.collections(request: Request)
 
-GET     /collections/create         controllers.CollectionController.createCollection(request: Request, name)
+GET     /collections/create                    controllers.CollectionController.createCollection(request: Request, name)
 
-GET     /collections/delete         controllers.CollectionController.deleteCollection(collectionid: Int)
+GET     /collections/delete                    controllers.CollectionController.deleteCollection(collectionid: Int)
 
-GET     /collections/modify         controllers.CollectionController.modifyName(collectionid: Int, name)
+GET     /collections/modify                    controllers.CollectionController.modifyName(collectionid: Int, name)
 
-GET     /collections/movie/add      controllers.CollectionMoviesController.add(request: Request, collectionid: Int, movieid: Int)
+GET     /collections/movie/add                 controllers.CollectionMoviesController.add(request: Request, collectionid: Int, movieid: Int)
 
-GET     /collections/movie/remove   controllers.CollectionMoviesController.remove(collectionid: Int, movieid: Int)
+GET     /collections/movie/remove              controllers.CollectionMoviesController.remove(collectionid: Int, movieid: Int)
 
-GET     /users                      controllers.UsersController.users(request: Request, q ?= "")
+GET     /users                                 controllers.UsersController.users(request: Request, q ?= "")
 
-GET     /users/follow               controllers.FollowController.follow(request: Request, followedid: Int)
+GET     /users/follow                          controllers.FollowController.follow(request: Request, followedid: Int)
 
-GET     /users/unfollow             controllers.FollowController.unfollow(request: Request, followedid: Int)
+GET     /users/unfollow                        controllers.FollowController.unfollow(request: Request, followedid: Int)
 
-GET     /collections/:collectionid  controllers.CollectionMoviesController.collectionMovies(request: Request, collectionid: Int)
+GET     /collections/:collectionid             controllers.CollectionMoviesController.collectionMovies(request: Request, collectionid: Int)
 
-GET     /collections/:cid/play/:pg  controllers.PlayCollectionController.playCollection(request: Request, cid: Int, pg: Int)
+GET     /collections/:cid/play/:pg             controllers.PlayCollectionController.playCollection(request: Request, cid: Int, pg: Int)
 
-GET     /search                     controllers.MovieSearchController.search(request: Request, q?="N/A", c: Int?=0, s: Int?=0, a: Boolean?=true)
+GET     /search                                controllers.MovieSearchController.search(request: Request, q?="N/A", c: Int?=0, s: Int?=0, a: Boolean?=true)
 
-POST    /signin                     controllers.SignInController.verify(request: Request)
+POST    /signin                                controllers.SignInController.verify(request: Request)
 
-POST    /register                   controllers.RegisterController.createUser(request: Request)
+POST    /register                              controllers.RegisterController.createUser(request: Request)
 
-GET     /movie/:movieID             controllers.MovieController.loadMovie(request: Request, movieID: Int)
+GET     /movie/:movieID                        controllers.MovieController.loadMovie(request: Request, movieID: Int)
 
-POST    /movie/:movieID/play        controllers.MovieController.movieWatched(request: Request, movieID: Int)
+POST    /movie/:movieID/play                   controllers.MovieController.movieWatched(request: Request, movieID: Int)
 
-POST    /movie/:movieID/rate        controllers.MovieController.movieRated(request: Request, movieID: Int)
+POST    /movie/:movieID/rate                   controllers.MovieController.movieRated(request: Request, movieID: Int)
 
-GET     /recommendations            controllers.RecsController.loadRecs(request: Request)
+#GET     /recommendations                       controllers.RecommendationsController.loadRecs(request: Request)
 
-GET     /profile                    controllers.ProfileController.loadProfile(request: Request)
+GET     /recommendations/rolling               controllers.RecommendationsController.topMoviesRolling(request: Request)
+
+GET     /recommendations/friends               controllers.RecommendationsController.friendTopMovies(request: Request)
+
+GET     /recommendations/monthly                controllers.RecommendationsController.top5LastMonth(request: Request)
+
+GET     /recommendations/foryou                 controllers.RecommendationsController.forYou(request: Request)
+
+GET     /profile                               controllers.ProfileController.loadProfile(request: Request)
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
+GET     /assets/*file                          controllers.Assets.versioned(path="/public", file: Asset)

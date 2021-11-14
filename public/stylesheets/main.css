@@ -5,6 +5,11 @@
     margin: 0;
 }
 
+.table-heading h1 {
+    color: #444444;
+    font-size: 16px;
+}
+
 body {
     background-color: #FEFBF3;
 }
