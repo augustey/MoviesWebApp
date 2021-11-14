@@ -34,8 +34,8 @@ public class ProfileController extends Controller{
 
             return accountManager.getProfile(user.getUserID()).thenCombine(accountManager.getTop10(user.getUserID()),
                     (stats, Top10) -> {
-                return ok(views.html.profile.render(user, stats[0], stats[1], stats[2], Top10, session)));
-            }
+                        return ok(views.html.profile.render(user, stats[0], stats[1], stats[2], Top10, session));
+                    });
 
         }).orElseGet(() -> CompletableFuture.completedFuture(ok(views.html.profile.render(null, null, null, null, null, session))));
     }

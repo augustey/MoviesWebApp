@@ -1,4 +1,5 @@
-@(user : User)(followers : Integer)(following : Integer)(collections : Integer)(top10 : ArrayList<Movie>)(implicit session: play.mvc.Http.Session)
+@import java.util
+@(user : User)(followers : Integer)(following : Integer)(collections : Integer)(top10 : util.List[Movie])(implicit session: play.mvc.Http.Session)
 
 <!DOCTYPE html>
 
@@ -21,7 +22,7 @@
                 <p>Top 10 Movies(Ranked by Most Watches):</p>
             <ol>
                 @for(m <- top10) {
-                <li>m.getTitle()</li>
+                <li>@m.getTitle</li>
                 }
             </ol>
             } else {
