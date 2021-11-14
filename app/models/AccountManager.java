@@ -258,7 +258,7 @@ public class AccountManager {
                 ResultSet results = statement.executeQuery(sql);
 
                 if (results.next()) {
-                    stats[0] = results.getInt("followedCount");
+                    stats[0] = results.getInt("count");
                 }
 
                 sql = "SELECT COUNT(*)  FROM follows WHERE followeruserid = %d;";
@@ -266,7 +266,7 @@ public class AccountManager {
                 results = statement.executeQuery(sql);
 
                 if (results.next()) {
-                    stats[1] = results.getInt("followersCount");
+                    stats[1] = results.getInt("count");
                 }
 
                 sql = "SELECT COUNT(*) FROM collections WHERE userid = %d";
@@ -274,7 +274,7 @@ public class AccountManager {
                 results = statement.executeQuery(sql);
 
                 if (results.next()) {
-                    stats[2] = results.getInt("collectionsCount");
+                    stats[2] = results.getInt("count");
                 }
 
                 return stats;
