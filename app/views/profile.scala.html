@@ -13,8 +13,13 @@
     <body>
         @header()
         <div class="content">
-            <p>@user.getUsername()</p>
-            <p>Followers: @followers</p>
+            @if(user != null) {
+                <p>@user.getUsername()</p>
+                <p>Followers: @followers</p>
+                <p>Following: @following</p>
+            } else {
+                <p>Cannot view profile: user not signed in</p>
+            }
         </div>
     </body>
 </html>
