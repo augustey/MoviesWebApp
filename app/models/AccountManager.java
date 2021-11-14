@@ -7,6 +7,8 @@ import javax.inject.Inject;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
@@ -279,6 +281,45 @@ public class AccountManager {
 
                 return stats;
             })
+        );
+    }
+
+    public CompletionStage<ArrayList<Movie>> getTop10(int userID) {
+        return CompletableFuture.supplyAsync(() ->
+                dataSource.withConnection(conn -> {
+                    ArrayList<Movie> Top10 = new ArrayList<Movie>();
+
+                    Statement statement = conn.createStatement();
+                    String sql = """
+                            SELECT watches.movieid, movies.title, movies.length, movies.releasedate, movies.mpaa, watches.timesplayed
+                            FROM watches
+                            JOIN movies on watches.movieid = movies.movieid
+                            WHERE userid = %d
+                            ORDER BY timesplayed DESC
+                            """;
+                    sql = String.format(sql, userID);
+                    ResultSet results = statement.executeQuery(sql);
+
+                    for (int i = 0; i < 10; i++) {
+                        Movie movie = null;
+
+                        if(results.next()) {
+                            int movieID = results.getInt("MovieID");
+                            String title = results.getString("Title");
+                            int length = results.getInt("Length");
+                            Date releaseDate = results.getDate("ReleaseDate");
+                            String mpaa = results.getString("MPAA");
+                            double rating = results.getDouble("Rating");
+
+                            movie = new Movie(movieID, title, length, releaseDate, mpaa, rating);
+                        }
+
+                        Top10.add(movie);
+                    }
+
+                    return Top10;
+                }
+                )
         );
     }
 

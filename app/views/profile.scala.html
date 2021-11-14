@@ -1,4 +1,4 @@
-@(user : User)(followers : Integer)(following : Integer)(collections : Integer)(implicit session: play.mvc.Http.Session)
+@(user : User)(followers : Integer)(following : Integer)(collections : Integer)(top10 : ArrayList<Movie>)(implicit session: play.mvc.Http.Session)
 
 <!DOCTYPE html>
 
@@ -18,6 +18,12 @@
                 <p>Collections: @collections</p>
                 <p>Followers: @followers</p>
                 <p>Following: @following</p>
+                <p>Top 10 Movies(Ranked by Most Watches):</p>
+            <ol>
+                @for(m <- top10) {
+                <li>m.getTitle()</li>
+                }
+            </ol>
             } else {
                 <p>Cannot view profile: user not signed in</p>
             }
