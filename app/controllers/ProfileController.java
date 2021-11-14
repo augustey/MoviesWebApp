@@ -31,11 +31,9 @@ public class ProfileController extends Controller{
             JsonNode userNode = Json.parse(userJson);
             User user = Json.fromJson(userNode, User.class);
 
-            return accountManager.getFollowers(user.getUserID()).thenCombine(accountManager.getFollowing(user.getUserID())
-                    .thenCombine(accountManager.getCollections(user.getUserID())),
-                    (followers, following, collections) ->
-                            ok(views.html.profile.render(user, followers, following, collections, session)));
 
+            return accountManager.getProfile(user.getUserID()).thenApply(stats ->
+                            ok(views.html.profile.render(user, stats[0], stats[1], stats[2], session)));
         }).orElseGet(() -> CompletableFuture.completedFuture(ok(views.html.profile.render(null, null, null, null, session))));
     }
 }
