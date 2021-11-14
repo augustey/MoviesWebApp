@@ -375,19 +375,45 @@ public class MovieManager {
         );
     }
 
-//    public CompletionStage<List<Movie>> getTop5LastMonth() {
-//        return CompletableFuture.supplyAsync(() ->
-//                dataSource.withConnection(conn -> {
-//                    Statement statement = conn.createStatement();
-//
-//                    String getTop5Query = """
-//                            SELECT *\s
-//                            FROM movies\s
-//                            WHERE releasedate >= CURRENT_DATE - INTERVAL ‘1 month’;
-//                            """;
-//
-//                    return ne
-//                })
-//        );
-//    }
+    public CompletionStage<List<Movie>> getTop5LastMonth() {
+        return CompletableFuture.supplyAsync(() ->
+                dataSource.withConnection(conn -> {
+                    Statement statement = conn.createStatement();
+
+                    List<Movie> top5 = new ArrayList<>();
+
+                    logger.info("Getting top 5 movies in the last month");
+                    String getTop5Query = """
+                            SELECT movies.movieid, movies.title, movies.length, movies.releasedate, movies.mpaa,
+                             AVG(watches.rating) as rating
+                            FROM movies
+                            JOIN watches ON movies.movieid = watches.movieid
+                            WHERE movies.releasedate >= CURRENT_DATE - INTERVAL '1 month'
+                            GROUP BY movies.title
+                            ORDER BY rating DESC
+                            LIMIT 5;
+                            """;
+                    ResultSet results = statement.executeQuery(getTop5Query);
+
+                    while(results.next()) {
+                        int movieID = results.getInt("movieID");
+                        String title = results.getString("Title");
+                        int length = results.getInt("Length");
+                        Date releaseDate = results.getDate("ReleaseDate");
+                        String mpaa = results.getString("MPAA");
+                        double rating = results.getDouble("rating");
+
+                        Movie movie = new Movie(movieID, title, length, releaseDate, mpaa, rating);
+
+                        top5.add(movie);
+                    }
+
+                    if(top5 == null) {
+                        logger.info("TOP 5 LIST WAS NULL");
+                    }
+
+                    return top5;
+                })
+        );
+    }
 }
