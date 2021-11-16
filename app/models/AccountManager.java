@@ -309,12 +309,10 @@ public class AccountManager {
                             int length = results.getInt("Length");
                             Date releaseDate = results.getDate("ReleaseDate");
                             String mpaa = results.getString("MPAA");
-                            double rating = results.getDouble("Rating");
 
-                            movie = new Movie(movieID, title, length, releaseDate, mpaa, rating);
+                            movie = new Movie(movieID, title, length, releaseDate, mpaa);
+                            Top10.add(movie);
                         }
-
-                        Top10.add(movie);
                     }
 
                     return Top10;

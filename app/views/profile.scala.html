@@ -15,16 +15,37 @@
         @header()
         <div class="content">
             @if(user != null) {
-                <p>@user.getUsername()</p>
-                <p>Collections: @collections</p>
-                <p>Followers: @followers</p>
-                <p>Following: @following</p>
-                <p>Top 10 Movies(Ranked by Most Watches):</p>
-            <ol>
-                @for(m <- top10) {
-                <li>@m.getTitle</li>
-                }
-            </ol>
+                <p style="font-size:24px"><b>@user.getUsername()'s Profile</b></p>
+                <br>
+                <p><u>Followers:</u> @followers &emsp;<u>Following:</u> @following</p>
+                <br>
+                <p><u>Collections:</u> @collections</p>
+                <br>
+                <p><b>Top 10 Movies(Ranked by Most Watches):</b></p>
+                <br>
+                <div class="sql-table">
+                    <table>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Title</th>
+                            <th>Length</th>
+                            <th>MPAA</th>
+                        </tr>
+                        @for(index <- 1 until (top10.size + 1)) {
+                            <tr>
+                                <td>@index)</td>
+                                <td>@top10(index - 1).getTitle</td>
+                                <td>@top10(index - 1).getLength</td>
+                                <td>@top10(index - 1).getMpaa</td>
+                            </tr>
+                        }
+                        <tr>
+                            <td>...</td>
+                            <td>...</td>
+                            <td>...</td>
+                        </tr>
+                    </table>
+                </div>
             } else {
                 <p>Cannot view profile: user not signed in</p>
             }
